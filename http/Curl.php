@@ -1,5 +1,6 @@
 <?php namespace Telegram\Http;
 
+use Telegram\Bot\Types\InputFile;
 use Telegram\Http\Methods\Get;
 use Telegram\Uri;
 
@@ -9,7 +10,7 @@ class Curl extends Base
 	{
 		$curlHandle = curl_init();
 
-		if ($this->headers){
+		if ($this->headers) {
 			curl_setopt($curlHandle, CURLOPT_HTTPHEADER, $this->headers);
 		}
 
@@ -18,21 +19,29 @@ class Curl extends Base
 
 		$url = $this->getUrl();
 
-		if ($this->httpMethod instanceof Get){
+		if ($this->httpMethod instanceof Get) {
 
-			if (is_array($this->getBody())){
+			if (is_array($this->getBody())) {
 				$uri = new Uri($this->getUrl());
 
-				foreach ($this->getBody() as $name => $value){
+				foreach ($this->getBody() as $name => $value) {
 					$uri->addParam($name, $value);
 				}
 
 				$url = $uri->getUri();
 			}
-		}
-		elseif ($fields = $this->getBody()) {
-			if (is_array($this->getBody())){
-				$fields = http_build_query($fields);
+		} elseif ($fields = $this->getBody()) {
+			if (is_array($fields)) {
+
+				foreach ($fields as $key => $value) {
+					if ($value instanceof InputFile) {
+						$fields[$key] = new \CURLFile(
+							$value->getPath(),
+							$value->getMimeType(),
+							$value->getPostName()
+						);;
+					}
+				}
 			}
 
 			curl_setopt($curlHandle, CURLOPT_POSTFIELDS, $fields);
@@ -56,8 +65,8 @@ class Curl extends Base
 		$header = trim($header);
 		$headers = [];
 
-		foreach (explode("\r\n", $header) as $h){
-			if(false !== ($matches = explode(':', $h, 2))) {
+		foreach (explode("\r\n", $header) as $h) {
+			if ($matches = explode(':', $h, 2)) {
 				$headers[$matches[0]] = trim($matches[1]);
 			}
 		}
