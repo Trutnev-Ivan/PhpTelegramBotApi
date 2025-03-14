@@ -6,7 +6,7 @@ class Loader
 	{
 		$files = scandir($dir);
 
-//		file_put_contents($_SERVER['DOCUMENT_ROOT'].'/log/dir.log', __FILE__ . ':' . __LINE__ . "\n(" . date('Y-m-d H:i:s').")\n" . print_r($files, TRUE) . "\n\n");
+		file_put_contents($_SERVER['DOCUMENT_ROOT'].'/log/dir.log', __FILE__ . ':' . __LINE__ . "\n(" . date('Y-m-d H:i:s').")\n" . print_r($files, TRUE) . "\n\n");
 
 		foreach ($files as $file) {
 

@@ -31,7 +31,7 @@ class Curl extends Base
 			}
 		}
 		elseif ($fields = $this->getBody()) {
-			if (!is_array($this->getBody())){
+			if (is_array($this->getBody())){
 				$fields = http_build_query($fields);
 			}
 
