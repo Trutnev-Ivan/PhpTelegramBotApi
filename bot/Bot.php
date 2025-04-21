@@ -3647,6 +3647,7 @@ abstract class Bot
 	}
 
 	/**
+	 * @see https://core.telegram.org/bots/api#getupdates
 	 * @return Update[]
 	 * @throws InvalidHttpStatusException
 	 * @throws InvalidResponseException
