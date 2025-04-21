@@ -3,16 +3,20 @@
 /**
  * @see https://core.telegram.org/bots/api#backgroundfill
  */
-class BackgroundFill implements \JsonSerializable
+class BackgroundFill
 {
-	//TODO: заполнить после
-
-	public static function fromArray(array $array): BackgroundFill
+	public static function fromArray(array $array): BackgroundFillSolid|BackgroundFillGradient|BackgroundFillFreeformGradient
 	{
+		switch ($array["type"]){
+			case "solid":
+                return BackgroundFillSolid::fromArray($array);
+            case "gradient":
+                return BackgroundFillGradient::fromArray($array);
+            case "freeform_gradient":
+                return BackgroundFillFreeformGradient::fromArray($array);
+            default:
+                throw new \InvalidArgumentException("Unknown background fill type: {$array["type"]}");
+		}
 	}
 
-	public function jsonSerialize()
-	{
-		// TODO: Implement jsonSerialize() method.
-	}
 }

@@ -26,7 +26,7 @@ class ChatMemberAdministrator implements \JsonSerializable
 	protected string $customTitle;
 
 	public function __construct(
-		string $status = "",
+		string $status = "administrator",
 		User $user = null,
 		bool $canBeEdited = false,
 		bool $isAnonymous = false,
@@ -66,13 +66,17 @@ class ChatMemberAdministrator implements \JsonSerializable
 		$this->canPinMessages = $canPinMessages;
 		$this->canManageTopics = $canManageTopics;
 		$this->customTitle = $customTitle;
+
+		if ($this->status != "administrator"){
+			throw new \InvalidArgumentException("Invalid status provided for ChatMemberAdministrator. Must be 'administrator', got {$this->status}");
+		}
 	}
 
 	public static function fromArray(array $array): ChatMemberAdministrator
 	{
 		return new static(
-			$array["status"] ?? "",
-			$array["user"] ? User::fromArray($array["user"]) : null,
+			$array["status"] ?? "administrator",
+			User::fromArray($array["user"]),
 			$array["can_be_edited"] ?? false,
 			$array["is_anonymous"] ?? false,
 			$array["can_manage_chat"] ?? false,
@@ -93,11 +97,11 @@ class ChatMemberAdministrator implements \JsonSerializable
 		);
 	}
 
-	public function jsonSerialize()
+	public function jsonSerialize(): array
 	{
 		return [
 			"status" => $this->status,
-			"user" => $this->user ? $this->user->jsonSerialize() : null,
+			"user" => $this->user->jsonSerialize(),
 			"can_be_edited" => $this->canBeEdited,
 			"is_anonymous" => $this->isAnonymous,
 			"can_manage_chat" => $this->canManageChat,

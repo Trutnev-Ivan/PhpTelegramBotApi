@@ -73,7 +73,7 @@ class ChatPermissions implements \JsonSerializable
 		);
 	}
 
-	public function jsonSerialize()
+	public function jsonSerialize(): array
 	{
 		return [
 			"can_send_messages" => $this->canSendMessages,

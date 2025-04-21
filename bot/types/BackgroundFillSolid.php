@@ -9,23 +9,27 @@ class BackgroundFillSolid implements \JsonSerializable
 	protected int $color;
 
 	public function __construct(
-		string $type,
-		int $color
+		string $type = "solid",
+		int $color = 0
 	)
 	{
 		$this->type = $type;
 		$this->color = $color;
+
+		if ($this->type != "solid"){
+			throw new \InvalidArgumentException("Invalid background fill type. Expected 'solid'.");
+		}
 	}
 
 	public static function fromArray(array $array): BackgroundFillSolid
 	{
 		return new static(
-			$array["type"] ?? "",
+			$array["type"] ?? "solid",
 			$array["color"] ?? 0
 		);
 	}
 
-	public function jsonSerialize()
+	public function jsonSerialize(): array
 	{
 		return [
 			"type" => $this->type,

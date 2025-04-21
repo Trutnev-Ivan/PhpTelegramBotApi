@@ -16,8 +16,8 @@ class InputPaidMediaVideo implements \JsonSerializable
 	protected bool $supportsStreaming;
 
 	public function __construct(
-		string $type,
-		string $media,
+		string $type = "video",
+		string $media = "",
 		?string $thumbnail = null,
 		?string $cover = null,
 		?int $startTimestamp = null,
@@ -36,12 +36,16 @@ class InputPaidMediaVideo implements \JsonSerializable
 		$this->height = $height;
 		$this->duration = $duration;
 		$this->supportsStreaming = $supportsStreaming;
+
+		if ($this->type != "video"){
+			throw new \InvalidArgumentException("Type must be 'video', got {$this->type}");
+		}
 	}
 
 	public static function fromArray(array $array): InputPaidMediaVideo
 	{
 		return new static(
-			$array["type"] ?? "",
+			$array["type"] ?? "video",
 			$array["media"] ?? "",
 			$array["thumbnail"],
 			$array["cover"],
@@ -53,19 +57,36 @@ class InputPaidMediaVideo implements \JsonSerializable
 		);
 	}
 
-	public function jsonSerialize()
+	public function jsonSerialize(): array
 	{
-		return [
+		$array = [
 			"type" => $this->type,
 			"media" => $this->media,
-			"thumbnail" => $this->thumbnail,
-			"cover" => $this->cover,
-			"start_timestamp" => $this->startTimestamp,
-			"width" => $this->width,
-			"height" => $this->height,
-			"duration" => $this->duration,
-			"supports_streaming" => $this->supportsStreaming,
 		];
+
+		if (isset($this->thumbnail)){
+			$array["thumbnail"] = $this->thumbnail;
+		}
+		if (isset($this->cover)){
+			$array["cover"] = $this->cover;
+		}
+		if (isset($this->startTimestamp)){
+			$array["start_timestamp"] = $this->startTimestamp;
+		}
+		if (isset($this->width)){
+			$array["width"] = $this->width;
+		}
+		if (isset($this->height)){
+            $array["height"] = $this->height;
+        }
+		if (isset($this->duration)){
+            $array["duration"] = $this->duration;
+        }
+		if (isset($this->supportsStreaming)){
+			$array["supports_streaming"] = $this->supportsStreaming;
+		}
+
+		return $array;
 	}
 
 	/**

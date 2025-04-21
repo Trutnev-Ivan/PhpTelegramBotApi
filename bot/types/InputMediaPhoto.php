@@ -17,7 +17,7 @@ class InputMediaPhoto implements \JsonSerializable
 	protected bool $hasSpoiler;
 
 	public function __construct(
-		string $type = "",
+		string $type = "photo",
 		string $media = "",
 		?string $caption = null,
 		?string $parseMode = null,
@@ -34,6 +34,10 @@ class InputMediaPhoto implements \JsonSerializable
 		$this->showCaptionAboveMedia = $showCaptionAboveMedia;
 		$this->hasSpoiler = $hasSpoiler;
 
+		if ($this->type != "photo"){
+			throw new \InvalidArgumentException("Input media type must be 'photo', got {$this->type}");
+		}
+
 		foreach ($this->captionEntities as $entity) {
 			if (!$entity instanceof MessageEntity) {
 				throw new \InvalidArgumentException("All caption entities must be instances of " . MessageEntity::class);
@@ -44,7 +48,7 @@ class InputMediaPhoto implements \JsonSerializable
 	public static function fromArray(array $array): InputMediaPhoto
 	{
 		return new static(
-			$array["type"] ?? "",
+			$array["type"] ?? "photo",
 			$array["media"] ?? "",
 			$array["caption"],
 			$array["parse_mode"],
@@ -54,17 +58,24 @@ class InputMediaPhoto implements \JsonSerializable
 		);
 	}
 
-	public function jsonSerialize()
+	public function jsonSerialize(): array
 	{
-		return [
+		$array = [
 			"type" => $this->type,
 			"media" => $this->media,
-			"caption" => $this->caption,
-			"parse_mode" => $this->parseMode,
 			"caption_entities" => $this->captionEntities ? array_map(fn($entity) => $entity->jsonSerialize(), $this->captionEntities) : [],
 			"show_caption_above_media" => $this->showCaptionAboveMedia,
 			"has_spoiler" => $this->hasSpoiler,
 		];
+
+		if (isset($this->caption)) {
+			$array["caption"] = $this->caption;
+		}
+		if ($this->parseMode) {
+			$array["parse_mode"] = $this->parseMode;
+		}
+
+		return $array;
 	}
 
 	/**

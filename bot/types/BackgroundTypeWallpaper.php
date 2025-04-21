@@ -12,7 +12,7 @@ class BackgroundTypeWallpaper implements \JsonSerializable
 	protected bool $isMoving;
 
 	public function __construct(
-		string $type = "",
+		string $type = "wallpaper",
 		Document $document = null,
 		int $darkThemeDimming = 0,
 		bool $isBlurred = false,
@@ -24,24 +24,28 @@ class BackgroundTypeWallpaper implements \JsonSerializable
 		$this->darkThemeDimming = $darkThemeDimming;
 		$this->isBlurred = $isBlurred;
 		$this->isMoving = $isMoving;
+
+		if ($this->type != "wallpaper"){
+			throw new \InvalidArgumentException("Invalid type for BackgroundTypeWallpaper. Must be 'wallpaper'");
+		}
 	}
 
 	public static function fromArray(array $array): BackgroundTypeWallpaper
 	{
 		return new static(
-			$array["type"] ?? "",
-			$array["document"] ? Document::fromArray($array["document"]) : null,
+			$array["type"] ?? "wallpaper",
+			Document::fromArray($array["document"]),
 			$array["dark_theme_dimming"] ?? 0,
 			$array["is_blurred"] ?? false,
 			$array["is_moving"] ?? false
 		);
 	}
 
-	public function jsonSerialize()
+	public function jsonSerialize(): array
 	{
 		return [
 			"type" => $this->type,
-			"document" => $this->document ? $this->document->jsonSerialize() : null,
+			"document" => $this->document->jsonSerialize(),
 			"dark_theme_dimming" => $this->darkThemeDimming,
 			"is_blurred" => $this->isBlurred,
 			"is_moving" => $this->isMoving,

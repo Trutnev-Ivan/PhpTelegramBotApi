@@ -42,10 +42,10 @@ class MessageReactionCountUpdated implements \JsonSerializable
 		);
 	}
 
-	public function jsonSerialize()
+	public function jsonSerialize(): array
 	{
 		return [
-			"chat" => $this->chat ? $this->chat->jsonSerialize() : null,
+			"chat" => $this->chat->jsonSerialize(),
 			"message_id" => $this->messageId,
 			"date" => $this->date,
 			"reactions" => $this->reactions ? array_map(fn($reaction) => $reaction->jsonSerialize(), $this->reactions) : [],

@@ -63,17 +63,24 @@ class MessageReactionUpdated implements \JsonSerializable
 		);
 	}
 
-	public function jsonSerialize()
+	public function jsonSerialize(): array
 	{
-		return [
-			"chat" => $this->chat ? $this->chat->jsonSerialize() : null,
+		$array = [
+			"chat" => $this->chat->jsonSerialize(),
 			"message_id" => $this->messageId,
-			"user" => $this->user ? $this->user->jsonSerialize() : null,
-			"actor_chat" => $this->actorChat ? $this->actorChat->jsonSerialize() : null,
 			"date" => $this->date,
 			"old_reaction" => $this->oldReaction ? array_map(fn($reaction) => $reaction->jsonSerialize(), $this->oldReaction) : [],
 			"new_reaction" => $this->newReaction ? array_map(fn($reaction) => $reaction->jsonSerialize(), $this->newReaction) : [],
 		];
+
+		if (isset($this->user)){
+			$array["user"] = $this->user->jsonSerialize();
+		}
+		if (isset($this->actorChat)){
+			$array["actor_chat"] = $this->actorChat->jsonSerialize();
+		}
+
+		return $array;
 	}
 
 	/**

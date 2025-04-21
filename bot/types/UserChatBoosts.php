@@ -30,7 +30,7 @@ class UserChatBoosts implements \JsonSerializable
 		);
 	}
 
-	public function jsonSerialize()
+	public function jsonSerialize(): array
 	{
 		return [
 			"boosts" => $this->boosts ? array_map(fn($boost) => $boost->jsonSerialize(), $this->boosts) : [],

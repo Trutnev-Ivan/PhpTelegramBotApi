@@ -46,9 +46,9 @@ class Video implements \JsonSerializable
 		$this->mimeType = $mimeType;
 		$this->fileSize = $fileSize;
 
-		foreach ($this->cover as $cover){
-			if (!($cover instanceof PhotoSize)){
-				throw new \InvalidArgumentException("All elements of the 'cover' array must be instances of ".PhotoSize::class);
+		foreach ($this->cover as $cover) {
+			if (!($cover instanceof PhotoSize)) {
+				throw new \InvalidArgumentException("All elements of the 'cover' array must be instances of " . PhotoSize::class);
 			}
 		}
 	}
@@ -70,21 +70,34 @@ class Video implements \JsonSerializable
 		);
 	}
 
-	public function jsonSerialize()
+	public function jsonSerialize(): array
 	{
-		return [
+		$array = [
 			"file_id" => $this->fileId,
 			"file_unique_id" => $this->fileUniqueId,
 			"width" => $this->width,
 			"height" => $this->height,
 			"duration" => $this->duration,
-			"thumbnail" => $this->thumbnail ? $this->thumbnail->jsonSerialize() : null,
 			"cover" => $this->cover ? array_map(fn($cover) => $cover->jsonSerialize(), $this->cover) : [],
-			"start_timestamp" => $this->startTimestamp,
-			"file_name" => $this->fileName,
-			"mime_type" => $this->mimeType,
-			"file_size" => $this->fileSize,
 		];
+
+		if (isset($this->thumbnail)) {
+			$array["thumbnail"] = $this->thumbnail->jsonSerialize();
+		}
+		if (isset($this->startTimestamp)) {
+			$array["start_timestamp"] = $this->startTimestamp;
+		}
+		if (isset($this->fileName)) {
+			$array["file_name"] = $this->fileName;
+		}
+		if (isset($this->mimeType)) {
+			$array["mime_type"] = $this->mimeType;
+		}
+		if (isset($this->fileSize)) {
+			$array["file_size"] = $this->fileSize;
+		}
+
+		return $array;
 	}
 
 	/**

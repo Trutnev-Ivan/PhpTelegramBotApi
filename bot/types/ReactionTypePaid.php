@@ -8,18 +8,22 @@ class ReactionTypePaid implements \JsonSerializable
 	protected string $type;
 
 	public function __construct(
-		string $type
+		string $type = "paid"
 	)
 	{
 		$this->type = $type;
+
+		if ($this->type != "paid"){
+			throw new \InvalidArgumentException("Invalid reaction type '{$this->type}'. Only 'paid' is allowed.");
+		}
 	}
 
 	public static function fromArray(array $array): ReactionTypePaid
 	{
-		return new static($array["type"] ?? "");
+		return new static($array["type"] ?? "paid");
 	}
 
-	public function jsonSerialize()
+	public function jsonSerialize(): array
 	{
 		return [
 			"type" => $this->type,

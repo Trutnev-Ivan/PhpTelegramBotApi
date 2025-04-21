@@ -25,7 +25,7 @@ class ChatMemberRestricted implements \JsonSerializable
 	protected int $untilDate;
 
 	public function __construct(
-		string $status = "",
+		string $status = "restricted",
 		User $user = null,
 		bool $isMember = false,
 		bool $canSendMessages = false,
@@ -63,13 +63,17 @@ class ChatMemberRestricted implements \JsonSerializable
 		$this->canPinMessages = $canPinMessages;
 		$this->canManageTopics = $canManageTopics;
 		$this->untilDate = $untilDate;
+
+		if ($this->status != "restricted"){
+			throw new \InvalidArgumentException("Invalid status for ChatMemberRestricted. Must be 'restricted', got {$this->status}");
+		}
 	}
 
 	public static function fromArray(array $array): ChatMemberRestricted
 	{
 		return new static(
-			$array["status"] ?? "",
-			$array["user"] ? User::fromArray($array["user"]) : null,
+			$array["status"] ?? "restricted",
+			User::fromArray($array["user"]),
 			$array["is_member"] ?? false,
 			$array["can_send_messages"] ?? false,
 			$array["can_send_audios"] ?? false,
@@ -89,11 +93,11 @@ class ChatMemberRestricted implements \JsonSerializable
 		);
 	}
 
-	public function jsonSerialize()
+	public function jsonSerialize(): array
 	{
 		return [
 			"status" => $this->status,
-			"user" => $this->user ? $this->user->jsonSerialize() : null,
+			"user" => $this->user->jsonSerialize(),
 			"is_member" => $this->isMember,
 			"can_send_messages" => $this->canSendMessages,
 			"can_send_audios" => $this->canSendAudios,

@@ -14,7 +14,7 @@ class Message implements \JsonSerializable
 	protected int $date;
 	protected ?string $businessConnectionId;
 	protected Chat $chat;
-	protected ?MessageOrigin $forwardOrigin;
+	protected MessageOriginUser|MessageOriginHiddenUser|MessageOriginChat|MessageOriginChannel|null $forwardOrigin;
 	protected bool $isTopicMessage;
 	protected bool $isAutomaticForward;
 	protected ?Message $replyToMessage;
@@ -77,7 +77,7 @@ class Message implements \JsonSerializable
 	protected ?MessageAutoDeleteTimerChanged $messageAutoDeleteTimerChanged;
 	protected ?int $migrateToChatId;
 	protected ?int $migrateFromChatId;
-	protected ?MaybeInaccessibleMessage $pinnedMessage;
+	protected Message|InaccessibleMessage|null $pinnedMessage;
 	protected ?Invoice $invoice;
 	protected ?SuccessfulPayment $successfulPayment;
 	protected ?RefundedPayment $refundedPayment;
@@ -116,7 +116,7 @@ class Message implements \JsonSerializable
 		int $date = 0,
 		?string $businessConnectionId = null,
 		Chat $chat = null,
-		?MessageOrigin $forwardOrigin = null,
+		MessageOriginUser|MessageOriginHiddenUser|MessageOriginChat|MessageOriginChannel|null $forwardOrigin = null,
 		bool $isTopicMessage = false,
 		bool $isAutomaticForward = false,
 		?Message $replyToMessage = null,
@@ -164,7 +164,7 @@ class Message implements \JsonSerializable
 		?MessageAutoDeleteTimerChanged $messageAutoDeleteTimerChanged = null,
 		?int $migrateToChatId = null,
 		?int $migrateFromChatId = null,
-		?MaybeInaccessibleMessage $pinnedMessage = null,
+		Message|InaccessibleMessage|null $pinnedMessage = null,
 		?Invoice $invoice = null,
 		?SuccessfulPayment $successfulPayment = null,
 		?RefundedPayment $refundedPayment = null,
@@ -310,17 +310,17 @@ class Message implements \JsonSerializable
 			}
 		}
 	}
-	
+
 	public static function fromArray(array $array): Message
 	{
 		return new static(
 			$array["message_id"] ?? 0,
-			$array["message_thread_id"],
+			$array["message_thread_id"] ?? null,
 			$array["from"] ? User::fromArray($array["from"]) : null,
 			$array["sender_chat"] ? Chat::fromArray($array["sender_chat"]) : null,
 			$array["sender_boost_count"],
 			$array["sender_business_bot"] ? User::fromArray($array["sender_business_bot"]) : null,
-			$array["date"],
+			$array["date"] ?? null,
 			$array["business_connection_id"],
 			$array["chat"] ? Chat::fromArray($array["chat"]) : null,
 			$array["forward_origin"] ? MessageOrigin::fromArray($array["forward_origin"]) : null,
@@ -331,15 +331,15 @@ class Message implements \JsonSerializable
 			$array["quote"] ? TextQuote::fromArray($array["quote"]) : null,
 			$array["reply_to_story"] ? Story::fromArray($array["reply_to_story"]) : null,
 			$array["via_bot"] ? User::fromArray($array["via_bot"]) : null,
-			$array["edit_date"],
+			$array["edit_date"] ?? null,
 			$array["has_protected_content"] ?? false,
-			$array["text"] ?? false,
-			$array["author_signature"],
-			$array["media_group_id"],
-			$array["is_from_offline"],
+			$array["is_from_offline"] ?? false,
+			$array["media_group_id"] ?? null,
+			$array["author_signature"] ?? null,
+			$array["text"] ?? "",
 			$array["entities"] ? array_map(fn($entity) => MessageEntity::fromArray($entity), $array["entities"]) : [],
 			$array["link_preview_options"] ? LinkPreviewOptions::fromArray($array["link_preview_options"]) : null,
-			$array["effect_id"],
+			$array["effect_id"] ?? null,
 			$array["animation"] ? Animation::fromArray($array["animation"]) : null,
 			$array["audio"] ? Audio::fromArray($array["audio"]) : null,
 			$array["document"] ? Document::fromArray($array["document"]) : null,
@@ -350,7 +350,7 @@ class Message implements \JsonSerializable
 			$array["video"] ? Video::fromArray($array["video"]) : null,
 			$array["video_note"] ? VideoNote::fromArray($array["video_note"]) : null,
 			$array["voice"] ? Voice::fromArray($array["voice"]) : null,
-			$array["caption"],
+			$array["caption"] ?? null,
 			$array["caption_entities"] ? array_map(fn($entity) => MessageEntity::fromArray($entity), $array["caption_entities"]) : [],
 			$array["show_caption_above_media"] ?? false,
 			$array["has_media_spoiler"] ?? false,
@@ -362,22 +362,22 @@ class Message implements \JsonSerializable
 			$array["location"] ? Location::fromArray($array["location"]) : null,
 			$array["new_chat_members"] ? array_map(fn($member) => User::fromArray($member), $array["new_chat_members"]) : [],
 			$array["left_chat_member"] ? User::fromArray($array["left_chat_member"]) : null,
-			$array["new_chat_title"],
+			$array["new_chat_title"] ?? null,
 			$array["new_chat_photo"] ? array_map(fn($photo) => PhotoSize::fromArray($photo), $array["new_chat_photo"]) : [],
 			$array["delete_chat_photo"] ?? false,
 			$array["group_chat_created"] ?? false,
 			$array["supergroup_chat_created"] ?? false,
 			$array["channel_chat_created"] ?? false,
 			$array["message_auto_delete_timer_changed"] ? MessageAutoDeleteTimerChanged::fromArray($array["message_auto_delete_timer_changed"]) : null,
-			$array["migrate_to_chat_id"],
-			$array["migrate_from_chat_id"],
+			$array["migrate_to_chat_id"] ?? null,
+			$array["migrate_from_chat_id"] ?? null,
 			$array["pinned_message"] ? MaybeInaccessibleMessage::fromArray($array["pinned_message"]) : null,
 			$array["invoice"] ? Invoice::fromArray($array["invoice"]) : null,
 			$array["successful_payment"] ? SuccessfulPayment::fromArray($array["successful_payment"]) : null,
 			$array["refunded_payment"] ? RefundedPayment::fromArray($array["refunded_payment"]) : null,
 			$array["users_shared"] ? UsersShared::fromArray($array["users_shared"]) : null,
 			$array["chat_shared"] ? ChatShared::fromArray($array["chat_shared"]) : null,
-			$array["connected_website"],
+			$array["connected_website"] ?? null,
 			$array["write_access_allowed"] ? WriteAccessAllowed::fromArray($array["write_access_allowed"]) : null,
 			$array["passport_data"] ? PassportData::fromArray($array["passport_data"]) : null,
 			$array["proximity_alert_triggered"] ? ProximityAlertTriggered::fromArray($array["proximity_alert_triggered"]) : null,
@@ -404,93 +404,230 @@ class Message implements \JsonSerializable
 
 	public function jsonSerialize(): array
 	{
-		return [
+		$array = [
 			"message_id" => $this->messageId,
-			"message_thread_id" => $this->messageThreadId,
-			"from" => $this->from ? $this->from->jsonSerialize() : null,
-			"sender_chat" => $this->senderChat ? $this->senderChat->jsonSerialize() : null,
-			"sender_boost_count" => $this->senderBoostCount,
-			"sender_business_bot" => $this->senderBusinessBot ? $this->senderBusinessBot->jsonSerialize() : null,
 			"date" => $this->date,
-			"business_connection_id" => $this->businessConnectionId,
-			"chat" => $this->chat ? $this->chat->jsonSerialize() : null,
-			"forward_origin" => $this->forwardOrigin ? $this->forwardOrigin->jsonSerialize() : null,
+			"chat" => $this->chat->jsonSerialize(),
 			"is_topic_message" => $this->isTopicMessage,
 			"is_automatic_forward" => $this->isAutomaticForward,
-			"reply_to_message" => $this->replyToMessage ? $this->replyToMessage->jsonSerialize() : null,
-			"external_reply" => $this->externalReply ? $this->externalReply->jsonSerialize() : null,
-			"quote" => $this->quote ? $this->quote->jsonSerialize() : null,
-			"reply_to_story" => $this->replyToStory ? $this->replyToStory->jsonSerialize() : null,
-			"via_bot" => $this->viaBot ? $this->viaBot->jsonSerialize() : null,
-			"edit_date" => $this->editDate,
 			"has_protected_content" => $this->hasProtectedContent,
 			"is_from_offline" => $this->isFromOffline,
-			"media_group_id" => $this->mediaGroupId,
-			"author_signature" => $this->authorSignature,
-			"text" => $this->text,
 			"entities" => $this->entities ? array_map(fn($entity) => $entity->jsonSerialize(), $this->entities) : [],
-			"link_preview_options" => $this->linkPreviewOptions ? $this->linkPreviewOptions->jsonSerialize() : null,
-			"effect_id" => $this->effectId,
-			"animation" => $this->animation ? $this->animation->jsonSerialize() : null,
-			"audio" => $this->audio ? $this->audio->jsonSerialize() : null,
-			"document" => $this->document ? $this->document->jsonSerialize() : null,
-			"paid_media" => $this->paidMedia ? $this->paidMedia->jsonSerialize() : null,
 			"photo" => $this->photo ? array_map(fn($photo) => $photo->jsonSerialize(), $this->photo) : [],
-			"sticker" => $this->sticker ? $this->sticker->jsonSerialize() : null,
-			"story" => $this->story ? $this->story->jsonSerialize() : null,
-			"video" => $this->video ? $this->video->jsonSerialize() : null,
-			"video_note" => $this->videoNote ? $this->videoNote->jsonSerialize() : null,
-			"voice" => $this->voice ? $this->voice->jsonSerialize() : null,
-			"caption" => $this->caption,
 			"caption_entities" => $this->captionEntities ? array_map(fn($caption) => $caption->jsonSerialize(), $this->captionEntities) : [],
 			"show_caption_above_media" => $this->showCaptionAboveMedia,
 			"has_media_spoiler" => $this->hasMediaSpoiler,
-			"contact" => $this->contact ? $this->contact->jsonSerialize() : null,
-			"dice" => $this->dice ? $this->dice->jsonSerialize() : null,
-			"game" => $this->game ? $this->game->jsonSerialize() : null,
-			"poll" => $this->poll ? $this->poll->jsonSerialize() : null,
-			"venue" => $this->venue ? $this->venue->jsonSerialize() : null,
-			"location" => $this->location ? $this->location->jsonSerialize() : null,
 			"new_chat_members" => $this->newChatMembers ? array_map(fn($user) => $user->jsonSerialize(), $this->newChatMembers) : [],
-			"left_chat_member" => $this->leftChatMember ? $this->leftChatMember->jsonSerialize() : null,
-			"new_chat_title" => $this->newChatTitle,
 			"new_chat_photo" => $this->newChatPhoto ? array_map(fn($photo) => $photo->jsonSerialize(), $this->newChatPhoto) : [],
 			"delete_chat_photo" => $this->deleteChatPhoto,
 			"group_chat_created" => $this->groupChatCreated,
 			"supergroup_chat_created" => $this->supergroupChatCreated,
 			"channel_chat_created" => $this->channelChatCreated,
-			"message_auto_delete_timer_changed" => $this->messageAutoDeleteTimerChanged ? $this->messageAutoDeleteTimerChanged->jsonSerialize() : null,
-			"migrate_to_chat_id" => $this->migrateToChatId,
-			"migrate_from_chat_id" => $this->migrateFromChatId,
-			"pinned_message" => $this->pinnedMessage ? $this->pinnedMessage->jsonSerialize() : null,
-			"invoice" => $this->invoice ? $this->invoice->jsonSerialize() : null,
-			"successful_payment" => $this->successfulPayment ? $this->successfulPayment->jsonSerialize() : null,
-			"refunded_payment" => $this->refundedPayment ? $this->refundedPayment->jsonSerialize() : null,
-			"users_shared" => $this->usersShared ? $this->usersShared->jsonSerialize() : null,
-			"chat_shared" => $this->chatShared ? $this->chatShared->jsonSerialize() : null,
-			"connected_website" => $this->connectedWebsite,
-			"write_access_allowed" => $this->writeAccessAllowed ? $this->writeAccessAllowed->jsonSerialize() : null,
-			"passport_data" => $this->passportData ? $this->passportData->jsonSerialize() : null,
-			"proximity_alert_triggered" => $this->proximityAlertTriggered ? $this->proximityAlertTriggered->jsonSerialize() : null,
-			"boost_added" => $this->boostAdded ? $this->boostAdded->jsonSerialize() : null,
-			"chat_background_set" => $this->chatBackgroundSet ? $this->chatBackgroundSet->jsonSerialize() : null,
-			"forum_topic_created" => $this->forumTopicCreated ? $this->forumTopicCreated->jsonSerialize() : null,
-			"forum_topic_edited" => $this->forumTopicEdited ? $this->forumTopicEdited->jsonSerialize() : null,
-			"forum_topic_closed" => $this->forumTopicClosed ? $this->forumTopicClosed->jsonSerialize() : null,
-			"forum_topic_reopened" => $this->forumTopicReopened ? $this->forumTopicReopened->jsonSerialize() : null,
-			"general_forum_topic_hidden" => $this->generalForumTopicHidden ? $this->generalForumTopicHidden->jsonSerialize() : null,
-			"general_forum_topic_unhidden" => $this->generalForumTopicUnhidden ? $this->generalForumTopicUnhidden->jsonSerialize() : null,
-			"giveaway_created" => $this->giveawayCreated ? $this->giveawayCreated->jsonSerialize() : null,
-			"giveaway" => $this->giveaway ? $this->giveaway->jsonSerialize() : null,
-			"giveaway_winners" => $this->giveawayWinners ? $this->giveawayWinners->jsonSerialize() : null,
-			"giveaway_completed" => $this->giveawayCompleted ? $this->giveawayCompleted->jsonSerialize() : null,
-			"video_chat_scheduled" => $this->videoChatScheduled ? $this->videoChatScheduled->jsonSerialize() : null,
-			"video_chat_started" => $this->videoChatStarted ? $this->videoChatStarted->jsonSerialize() : null,
-			"video_chat_ended" => $this->videoChatEnded ? $this->videoChatEnded->jsonSerialize() : null,
-			"video_chat_participants_invited" => $this->videoChatParticipantsInvited ? $this->videoChatParticipantsInvited->jsonSerialize() : null,
-			"web_app_data" => $this->webAppData ? $this->webAppData->jsonSerialize() : null,
-			"reply_markup" => $this->replyMarkup ? $this->replyMarkup->jsonSerialize() : null,
 		];
+
+		if (isset($this->messageThreadId)) {
+			$array["message_thread_id"] = $this->messageThreadId;
+		}
+		if (isset($this->from)) {
+			$array["from"] = $this->from->jsonSerialize();
+		}
+		if (isset($this->senderChat)) {
+			$array["sender_chat"] = $this->senderChat->jsonSerialize();
+		}
+		if (isset($this->senderBoostCount)) {
+			$array["sender_boost_count"] = $this->senderBoostCount;
+		}
+		if (isset($this->senderBusinessBot)) {
+			$array["sender_business_bot"] = $this->senderBusinessBot->jsonSerialize();
+		}
+		if (isset($this->businessConnectionId)) {
+			$array["business_connection_id"] = $this->businessConnectionId;
+		}
+		if (isset($this->forwardOrigin)) {
+			$array["forward_origin"] = $this->forwardOrigin->jsonSerialize();
+		}
+		if (isset($this->replyToMessage)) {
+			$array["reply_to_message"] = $this->replyToMessage->jsonSerialize();
+		}
+		if (isset($this->externalReply)) {
+			$array["external_reply"] = $this->externalReply->jsonSerialize();
+		}
+		if (isset($this->quote)) {
+			$array["quote"] = $this->quote->jsonSerialize();
+		}
+		if (isset($this->replyToStory)) {
+			$array["reply_to_story"] = $this->replyToStory->jsonSerialize();
+		}
+		if (isset($this->viaBot)) {
+			$array["via_bot"] = $this->viaBot->jsonSerialize();
+		}
+		if (isset($this->editDate)) {
+			$array["edit_date"] = $this->editDate;
+		}
+		if (isset($this->mediaGroupId)) {
+			$array["media_group_id"] = $this->mediaGroupId;
+		}
+		if (isset($this->authorSignature)) {
+			$array["author_signature"] = $this->authorSignature;
+		}
+		if (isset($this->text)) {
+			$array["text"] = $this->text;
+		}
+		if (isset($this->linkPreviewOptions)) {
+			$array["link_preview_options"] = $this->linkPreviewOptions->jsonSerialize();
+		}
+		if (isset($this->effectId)) {
+			$array["effect_id"] = $this->effectId;
+		}
+		if (isset($this->animation)) {
+			$array["animation"] = $this->animation->jsonSerialize();
+		}
+		if (isset($this->audio)) {
+			$array["audio"] = $this->audio->jsonSerialize();
+		}
+		if (isset($this->document)) {
+			$array["document"] = $this->document->jsonSerialize();
+		}
+		if (isset($this->paidMedia)) {
+			$array["paid_media"] = $this->paidMedia->jsonSerialize();
+		}
+		if (isset($this->sticker)) {
+			$array["sticker"] = $this->sticker->jsonSerialize();
+		}
+		if (isset($this->story)) {
+			$array["story"] = $this->story->jsonSerialize();
+		}
+		if (isset($this->video)) {
+			$array["video"] = $this->video->jsonSerialize();
+		}
+		if (isset($this->videoNote)) {
+			$array["video_note"] = $this->videoNote->jsonSerialize();
+		}
+		if (isset($this->voice)) {
+			$array["voice"] = $this->voice->jsonSerialize();
+		}
+		if (isset($this->caption)) {
+			$array["caption"] = $this->caption;
+		}
+		if (isset($this->contact)) {
+			$array["contact"] = $this->contact->jsonSerialize();
+		}
+		if (isset($this->dice)) {
+			$array["dice"] = $this->dice->jsonSerialize();
+		}
+		if (isset($this->game)) {
+			$array["game"] = $this->game->jsonSerialize();
+		}
+		if (isset($this->poll)) {
+			$array["poll"] = $this->poll->jsonSerialize();
+		}
+		if (isset($this->venue)) {
+			$array["venue"] = $this->venue->jsonSerialize();
+		}
+		if (isset($this->location)) {
+			$array["location"] = $this->location->jsonSerialize();
+		}
+		if (isset($this->leftChatMember)) {
+			$array["left_chat_member"] = $this->leftChatMember->jsonSerialize();
+		}
+		if (isset($this->newChatTitle)) {
+			$array["new_chat_title"] = $this->newChatTitle;
+		}
+		if (isset($this->messageAutoDeleteTimerChanged)) {
+			$array["message_auto_delete_timer_changed"] = $this->messageAutoDeleteTimerChanged->jsonSerialize();
+		}
+		if (isset($this->migrateToChatId)) {
+			$array["migrate_to_chat_id"] = $this->migrateToChatId;
+		}
+		if (isset($this->migrateFromChatId)) {
+			$array["migrate_from_chat_id"] = $this->migrateFromChatId;
+		}
+		if (isset($this->pinnedMessage)) {
+			$array["pinned_message"] = $this->pinnedMessage->jsonSerialize();
+		}
+		if (isset($this->invoice)) {
+			$array["invoice"] = $this->invoice->jsonSerialize();
+		}
+		if (isset($this->successfulPayment)) {
+			$array["successful_payment"] = $this->successfulPayment->jsonSerialize();
+		}
+		if (isset($this->refundedPayment)) {
+			$array["refunded_payment"] = $this->refundedPayment->jsonSerialize();
+		}
+		if (isset($this->usersShared)) {
+			$array["users_shared"] = $this->usersShared->jsonSerialize();
+		}
+		if (isset($this->chatShared)) {
+			$array["chat_shared"] = $this->chatShared->jsonSerialize();
+		}
+		if (isset($this->connectedWebsite)) {
+			$array["connected_website"] = $this->connectedWebsite;
+		}
+		if (isset($this->writeAccessAllowed)) {
+			$array["write_access_allowed"] = $this->writeAccessAllowed->jsonSerialize();
+		}
+		if (isset($this->passportData)) {
+			$array["passport_data"] = $this->passportData->jsonSerialize();
+		}
+		if (isset($this->proximityAlertTriggered)) {
+			$array["proximity_alert_triggered"] = $this->proximityAlertTriggered->jsonSerialize();
+		}
+		if (isset($this->boostAdded)) {
+			$array["boost_added"] = $this->boostAdded->jsonSerialize();
+		}
+		if (isset($this->chatBackgroundSet)) {
+			$array["chat_background_set"] = $this->chatBackgroundSet->jsonSerialize();
+		}
+		if (isset($this->forumTopicCreated)) {
+			$array["forum_topic_created"] = $this->forumTopicCreated->jsonSerialize();
+		}
+		if (isset($this->forumTopicEdited)) {
+			$array["forum_topic_edited"] = $this->forumTopicEdited->jsonSerialize();
+		}
+		if (isset($this->forumTopicClosed)) {
+			$array["forum_topic_closed"] = $this->forumTopicClosed->jsonSerialize();
+		}
+		if (isset($this->forumTopicReopened)) {
+			$array["forum_topic_reopened"] = $this->forumTopicReopened->jsonSerialize();
+		}
+		if (isset($this->generalForumTopicHidden)) {
+			$array["general_forum_topic_hidden"] = $this->generalForumTopicHidden->jsonSerialize();
+		}
+		if (isset($this->generalForumTopicUnhidden)) {
+			$array["general_forum_topic_unhidden"] = $this->generalForumTopicUnhidden->jsonSerialize();
+		}
+		if (isset($this->giveawayCreated)) {
+			$array["giveaway_created"] = $this->giveawayCreated->jsonSerialize();
+		}
+		if (isset($this->giveaway)) {
+			$array["giveaway"] = $this->giveaway->jsonSerialize();
+		}
+		if (isset($this->giveawayWinners)) {
+			$array["giveaway_winners"] = $this->giveawayWinners->jsonSerialize();
+		}
+		if (isset($this->giveawayCompleted)) {
+			$array["giveaway_completed"] = $this->giveawayCompleted->jsonSerialize();
+		}
+		if (isset($this->videoChatScheduled)) {
+			$array["video_chat_scheduled"] = $this->videoChatScheduled->jsonSerialize();
+		}
+		if (isset($this->videoChatStarted)) {
+			$array["video_chat_started"] = $this->videoChatStarted->jsonSerialize();
+		}
+		if (isset($this->videoChatEnded)) {
+			$array["video_chat_ended"] = $this->videoChatEnded->jsonSerialize();
+		}
+		if (isset($this->videoChatParticipantsInvited)) {
+			$array["video_chat_participants_invited"] = $this->videoChatParticipantsInvited->jsonSerialize();
+		}
+		if (isset($this->webAppData)) {
+			$array["web_app_data"] = $this->webAppData->jsonSerialize();
+		}
+		if (isset($this->replyMarkup)) {
+			$array["reply_markup"] = $this->replyMarkup->jsonSerialize();
+		}
+
+		return $array;
 	}
 
 	/**
@@ -566,9 +703,9 @@ class Message implements \JsonSerializable
 	}
 
 	/**
-	 * @return MessageOrigin|null
+	 * @return MessageOriginUser|MessageOriginHiddenUser|MessageOriginChat|MessageOriginChannel|null
 	 */
-	public function getForwardOrigin(): ?MessageOrigin
+	public function getForwardOrigin(): MessageOriginUser|MessageOriginHiddenUser|MessageOriginChat|MessageOriginChannel|null
 	{
 		return $this->forwardOrigin;
 	}
@@ -950,9 +1087,9 @@ class Message implements \JsonSerializable
 	}
 
 	/**
-	 * @return MaybeInaccessibleMessage|null
+	 * @return Message|InaccessibleMessage|null
 	 */
-	public function getPinnedMessage(): ?MaybeInaccessibleMessage
+	public function getPinnedMessage(): Message|InaccessibleMessage|null
 	{
 		return $this->pinnedMessage;
 	}
@@ -998,176 +1135,176 @@ class Message implements \JsonSerializable
 	}
 
 	/**
- 	* @return string|null
- 	*/
+	 * @return string|null
+	 */
 	public function getConnectedWebsite(): ?string
 	{
 		return $this->connectedWebsite;
 	}
 
 	/**
- 	* @return WriteAccessAllowed|null
- 	*/
+	 * @return WriteAccessAllowed|null
+	 */
 	public function getWriteAccessAllowed(): ?WriteAccessAllowed
 	{
 		return $this->writeAccessAllowed;
 	}
 
 	/**
- 	* @return PassportData|null
- 	*/
+	 * @return PassportData|null
+	 */
 	public function getPassportData(): ?PassportData
 	{
 		return $this->passportData;
 	}
 
 	/**
- 	* @return ProximityAlertTriggered|null
- 	*/
+	 * @return ProximityAlertTriggered|null
+	 */
 	public function getProximityAlertTriggered(): ?ProximityAlertTriggered
 	{
 		return $this->proximityAlertTriggered;
 	}
 
 	/**
- 	* @return ChatBoostAdded|null
- 	*/
+	 * @return ChatBoostAdded|null
+	 */
 	public function getBoostAdded(): ?ChatBoostAdded
 	{
 		return $this->boostAdded;
 	}
 
 	/**
- 	* @return ChatBackground|null
- 	*/
+	 * @return ChatBackground|null
+	 */
 	public function getChatBackgroundSet(): ?ChatBackground
 	{
 		return $this->chatBackgroundSet;
 	}
 
 	/**
- 	* @return ForumTopicCreated|null
- 	*/
+	 * @return ForumTopicCreated|null
+	 */
 	public function getForumTopicCreated(): ?ForumTopicCreated
 	{
 		return $this->forumTopicCreated;
 	}
 
 	/**
- 	* @return ForumTopicEdited|null
- 	*/
+	 * @return ForumTopicEdited|null
+	 */
 	public function getForumTopicEdited(): ?ForumTopicEdited
 	{
 		return $this->forumTopicEdited;
 	}
 
 	/**
- 	* @return ForumTopicClosed|null
- 	*/
+	 * @return ForumTopicClosed|null
+	 */
 	public function getForumTopicClosed(): ?ForumTopicClosed
 	{
 		return $this->forumTopicClosed;
 	}
 
 	/**
- 	* @return ForumTopicReopened|null
- 	*/
+	 * @return ForumTopicReopened|null
+	 */
 	public function getForumTopicReopened(): ?ForumTopicReopened
 	{
 		return $this->forumTopicReopened;
 	}
 
 	/**
- 	* @return GeneralForumTopicHidden|null
- 	*/
+	 * @return GeneralForumTopicHidden|null
+	 */
 	public function getGeneralForumTopicHidden(): ?GeneralForumTopicHidden
 	{
 		return $this->generalForumTopicHidden;
 	}
 
 	/**
- 	* @return GeneralForumTopicUnhidden|null
- 	*/
+	 * @return GeneralForumTopicUnhidden|null
+	 */
 	public function getGeneralForumTopicUnhidden(): ?GeneralForumTopicUnhidden
 	{
 		return $this->generalForumTopicUnhidden;
 	}
 
 	/**
- 	* @return GiveawayCreated|null
- 	*/
+	 * @return GiveawayCreated|null
+	 */
 	public function getGiveawayCreated(): ?GiveawayCreated
 	{
 		return $this->giveawayCreated;
 	}
 
 	/**
- 	* @return Giveaway|null
- 	*/
+	 * @return Giveaway|null
+	 */
 	public function getGiveaway(): ?Giveaway
 	{
 		return $this->giveaway;
 	}
 
 	/**
- 	* @return GiveawayWinners|null
- 	*/
+	 * @return GiveawayWinners|null
+	 */
 	public function getGiveawayWinners(): ?GiveawayWinners
 	{
 		return $this->giveawayWinners;
 	}
 
 	/**
- 	* @return GiveawayCompleted|null
- 	*/
+	 * @return GiveawayCompleted|null
+	 */
 	public function getGiveawayCompleted(): ?GiveawayCompleted
 	{
 		return $this->giveawayCompleted;
 	}
 
 	/**
- 	* @return VideoChatScheduled|null
- 	*/
+	 * @return VideoChatScheduled|null
+	 */
 	public function getVideoChatScheduled(): ?VideoChatScheduled
 	{
 		return $this->videoChatScheduled;
 	}
 
 	/**
- 	* @return VideoChatStarted|null
- 	*/
+	 * @return VideoChatStarted|null
+	 */
 	public function getVideoChatStarted(): ?VideoChatStarted
 	{
 		return $this->videoChatStarted;
 	}
 
 	/**
- 	* @return VideoChatEnded|null
- 	*/
+	 * @return VideoChatEnded|null
+	 */
 	public function getVideoChatEnded(): ?VideoChatEnded
 	{
 		return $this->videoChatEnded;
 	}
 
 	/**
- 	* @return VideoChatParticipantsInvited|null
- 	*/
+	 * @return VideoChatParticipantsInvited|null
+	 */
 	public function getVideoChatParticipantsInvited(): ?VideoChatParticipantsInvited
 	{
 		return $this->videoChatParticipantsInvited;
 	}
 
 	/**
- 	* @return WebAppData|null
- 	*/
+	 * @return WebAppData|null
+	 */
 	public function getWebAppData(): ?WebAppData
 	{
 		return $this->webAppData;
 	}
 
 	/**
- 	* @return InlineKeyboardMarkup|null
- 	*/
+	 * @return InlineKeyboardMarkup|null
+	 */
 	public function getReplyMarkup(): ?InlineKeyboardMarkup
 	{
 		return $this->replyMarkup;

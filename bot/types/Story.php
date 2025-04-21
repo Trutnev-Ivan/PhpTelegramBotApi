@@ -20,15 +20,15 @@ class Story implements \JsonSerializable
 	public static function fromArray(array $array): Story
 	{
 		return new static(
-			$array["chat"] ? Chat::fromArray($array["chat"]) : null,
+			Chat::fromArray($array["chat"]),
 			$array["id"] ?? 0
 		);
 	}
 
-	public function jsonSerialize()
+	public function jsonSerialize(): array
 	{
 		return [
-			"chat" => $this->chat ? $this->chat->jsonSerialize() : null,
+			"chat" => $this->chat->jsonSerialize(),
 			"id" => $this->id,
 		];
 	}

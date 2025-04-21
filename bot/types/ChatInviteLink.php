@@ -48,7 +48,7 @@ class ChatInviteLink implements \JsonSerializable
 	{
 		return new static(
 			$array["invite_link"] ?? "",
-			$array["creator"] ? User::fromArray($array["creator"]) : null,
+			User::fromArray($array["creator"]),
 			$array["creates_join_request"] ?? false,
 			$array["is_primary"] ?? false,
 			$array["is_revoked"] ?? false,
@@ -61,21 +61,36 @@ class ChatInviteLink implements \JsonSerializable
 		);
 	}
 
-	public function jsonSerialize()
+	public function jsonSerialize(): array
 	{
-		return [
+		$array = [
 			"invite_link" => $this->inviteLink,
-			"creator" => $this->creator ? $this->creator->jsonSerialize() : null,
+			"creator" => $this->creator->jsonSerialize(),
 			"creates_join_request" => $this->createsJoinRequest,
 			"is_primary" => $this->isPrimary,
 			"is_revoked" => $this->isRevoked,
-			"name" => $this->name,
-			"expire_date" => $this->expireDate,
-			"member_limit" => $this->memberLimit,
-			"pending_join_request_count" => $this->pendingJoinRequestCount,
-			"subscription_period" => $this->subscriptionPeriod,
-			"subscription_price" => $this->subscriptionPrice,
 		];
+
+		if (isset($this->name)) {
+			$array["name"] = $this->name;
+		}
+		if (isset($this->expireDate)) {
+			$array["expire_date"] = $this->expireDate;
+		}
+		if (isset($this->memberLimit)) {
+			$array["member_limit"] = $this->memberLimit;
+		}
+		if (isset($this->pendingJoinRequestCount)) {
+			$array["pending_join_request_count"] = $this->pendingJoinRequestCount;
+		}
+		if (isset($this->subscriptionPeriod)) {
+			$array["subscription_period"] = $this->subscriptionPeriod;
+		}
+		if (isset($this->subscriptionPrice)) {
+			$array["subscription_price"] = $this->subscriptionPrice;
+		}
+
+		return $array;
 	}
 
 	/**

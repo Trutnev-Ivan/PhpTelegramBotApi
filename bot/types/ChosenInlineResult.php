@@ -30,22 +30,29 @@ class ChosenInlineResult implements \JsonSerializable
 	{
 		return new static(
 			$array["result_id"] ?? "",
-			$array["from"] ? User::fromArray($array["from"]) : null,
+			User::fromArray($array["from"]),
 			$array["location"] ? Location::fromArray($array["location"]) : null,
 			$array["inline_message_id"],
 			$array["query"] ?? ""
 		);
 	}
 
-	public function jsonSerialize(): mixed
+	public function jsonSerialize(): array
 	{
-		return [
+		$array = [
 			"result_id" => $this->resultId,
-			"from" => $this->from ? $this->from->jsonSerialize() : null,
-			"location" => $this->location ? $this->location->jsonSerialize() : null,
-			"inline_message_id" => $this->inlineMessageId,
+			"from" => $this->from->jsonSerialize(),
 			"query" => $this->query,
 		];
+
+		if (isset($this->location)) {
+			$array["location"] = $this->location->jsonSerialize();
+		}
+		if (isset($this->inlineMessageId)) {
+			$array["inline_message_id"] = $this->inlineMessageId;
+		}
+
+		return $array;
 	}
 
 	/**

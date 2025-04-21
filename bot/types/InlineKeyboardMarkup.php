@@ -16,24 +16,34 @@ class InlineKeyboardMarkup implements \JsonSerializable
 	{
 		$this->inlineKeyboard = $inlineKeyboard;
 
-		foreach ($this->inlineKeyboard as $keyboard) {
-			if (!$keyboard instanceof InlineKeyboardButton) {
-				throw new \InvalidArgumentException("InlineKeyboardMarkup must contain only " . InlineKeyboardButton::class);
+		foreach ($this->inlineKeyboard as $keyboards) {
+			foreach ($keyboards as $keyboard) {
+				if (!$keyboard instanceof InlineKeyboardButton) {
+					throw new \InvalidArgumentException("InlineKeyboardMarkup must contain only " . InlineKeyboardButton::class);
+				}
 			}
 		}
 	}
 
 	public static function fromArray(array $array): InlineKeyboardMarkup
 	{
+		$keyboards = [];
+
+		if (is_array($array["inline_keyboard"])) {
+			foreach ($array["inline_keyboard"] as $keyboard) {
+				$keyboards[] = InlineKeyboardButton::fromArray($keyboard);
+			}
+		}
+
 		return new static(
-			$array["inline_keyboard"] ? array_map(fn($keyboard) => InlineKeyboardButton::fromArray($keyboard), $array["inline_keyboard"]) : []
+			$keyboards
 		);
 	}
 
-	public function jsonSerialize()
+	public function jsonSerialize(): array
 	{
 		return [
-			"inline_keyboard" => $this->inlineKeyboard ? array_map(fn($keyboard) => $keyboard->jsonSerialize(), $this->inlineKeyboard) : [],
+			"inline_keyboard" => $this->inlineKeyboard,
 		];
 	}
 

@@ -12,12 +12,16 @@ class PaidMediaPhoto implements \JsonSerializable
 	protected array $photo;
 
 	public function __construct(
-		string $type = "",
+		string $type = "photo",
 		array $photo = []
 	)
 	{
 		$this->type = $type;
 		$this->photo = $photo;
+
+		if ($this->type != "photo"){
+			throw new \InvalidArgumentException("type must be 'photo', got {$this->type}");
+		}
 
 		foreach ($this->photo as $photo) {
 			if (!$photo instanceof PhotoSize) {
@@ -29,12 +33,12 @@ class PaidMediaPhoto implements \JsonSerializable
 	public static function fromArray(array $array): PaidMediaPhoto
 	{
 		return new static(
-			$array["type"] ?? "",
+			$array["type"] ?? "photo",
 			$array["photo"] ? array_map(fn($photo) => PhotoSize::fromArray($photo), $array["photo"]) : [],
 		);
 	}
 
-	public function jsonSerialize()
+	public function jsonSerialize(): array
 	{
 		return [
 			"type" => $this->type,

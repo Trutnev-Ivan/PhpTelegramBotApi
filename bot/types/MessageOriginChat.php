@@ -11,7 +11,7 @@ class MessageOriginChat implements \JsonSerializable
 	protected ?string $authorSignature;
 
 	public function __construct(
-		string $type = "",
+		string $type = "chat",
 		int $date = 0,
 		Chat $senderChat = null,
 		string $authorSignature = null
@@ -21,26 +21,35 @@ class MessageOriginChat implements \JsonSerializable
 		$this->date = $date;
 		$this->senderChat = $senderChat;
 		$this->authorSignature = $authorSignature;
+
+		if ($this->type != "chat"){
+			throw new \InvalidArgumentException("Type must be 'chat', got {$this->type}");
+		}
 	}
 
 	public static function fromArray(array $array): MessageOriginChat
 	{
 		return new static(
-			$array["type"] ?? "",
+			$array["type"] ?? "chat",
 			$array["date"] ?? 0,
-			$array["sender_chat"] ? Chat::fromArray($array["sender_chat"]) : null,
-			$array["author_signature"] ?? null
+			Chat::fromArray($array["sender_chat"]),
+			$array["author_signature"]
 		);
 	}
 
-	public function jsonSerialize()
+	public function jsonSerialize(): array
 	{
-		return [
+		$array = [
 			"type" => $this->type,
 			"date" => $this->date,
-			"sender_chat" => $this->senderChat ? $this->senderChat->jsonSerialize() : null,
-			"author_signature" => $this->authorSignature,
+			"sender_chat" => $this->senderChat->jsonSerialize(),
 		];
+
+		if (isset($this->authorSignature)) {
+			$array["author_signature"] = $this->authorSignature;
+		}
+
+		return $array;
 	}
 
 	/**

@@ -20,15 +20,15 @@ class ChatLocation implements \JsonSerializable
 	public static function fromArray(array $array): ChatLocation
 	{
 		return new static(
-			$array["location"] ? Location::fromArray($array["location"]) : null,
+			Location::fromArray($array["location"]),
 			$array["address"] ?? ""
 		);
 	}
 
-	public function jsonSerialize()
+	public function jsonSerialize(): array
 	{
 		return [
-			"location" => $this->location ? $this->location->jsonSerialize() : null,
+			"location" => $this->location->jsonSerialize(),
 			"address" => $this->address,
 		];
 	}

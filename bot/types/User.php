@@ -69,6 +69,34 @@ class User implements \JsonSerializable
 		);
 	}
 
+	public function jsonSerialize(): array
+	{
+		$array = [
+			"id" => $this->id,
+			"is_bot" => $this->isBot,
+			"first_name" => $this->firstName,
+			"is_premium" => $this->isPremium,
+			"added_to_attachment_menu" => $this->addedToAttachmentMenu,
+			"can_join_groups" => $this->canJoinGroups,
+			"can_read_all_group_messages" => $this->canReadAllGroupMessages,
+			"supports_inline_queries" => $this->supportsInlineQueries,
+			"can_connect_to_business" => $this->canConnectToBusiness,
+			"has_main_web_app" => $this->hasMainWebApp,
+		];
+
+		if (isset($this->lastName)) {
+			$array["last_name"] = $this->lastName;
+		}
+		if (isset($this->username)) {
+			$array["username"] = $this->username;
+		}
+		if (isset($this->languageCode)) {
+			$array["language_code"] = $this->languageCode;
+		}
+
+		return $array;
+	}
+
 	public function getId(): int
 	{
 		return $this->id;
@@ -132,24 +160,5 @@ class User implements \JsonSerializable
 	public function hasMainWebApp(): bool
 	{
 		return $this->hasMainWebApp;
-	}
-
-	public function jsonSerialize()
-	{
-		return [
-			"id" => $this->id,
-			"is_bot" => $this->isBot,
-			"first_name" => $this->firstName,
-			"last_name" => $this->lastName,
-			"username" => $this->username,
-			"language_code" => $this->languageCode,
-			"is_premium" => $this->isPremium,
-			"added_to_attachment_menu" => $this->addedToAttachmentMenu,
-			"can_join_groups" => $this->canJoinGroups,
-			"can_read_all_group_messages" => $this->canReadAllGroupMessages,
-			"supports_inline_queries" => $this->supportsInlineQueries,
-			"can_connect_to_business" => $this->canConnectToBusiness,
-			"has_main_web_app" => $this->hasMainWebApp,
-		];
 	}
 }

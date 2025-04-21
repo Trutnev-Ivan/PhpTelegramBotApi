@@ -7,7 +7,7 @@ class CallbackQuery implements \JsonSerializable
 {
 	protected string $id;
 	protected User $from;
-	protected ?MaybeInaccessibleMessage $message;
+	protected Message|InaccessibleMessage|null $message;
 	protected ?string $inlineMessageId;
 	protected string $chatInstance;
 	protected ?string $data;
@@ -16,7 +16,7 @@ class CallbackQuery implements \JsonSerializable
 	public function __construct(
 		string $id,
 		User $from,
-		?MaybeInaccessibleMessage $message = null,
+		Message|InaccessibleMessage|null $message = null,
 		?string $inlineMessageId = null,
 		string $chatInstance = "",
 		?string $data = null,
@@ -36,7 +36,7 @@ class CallbackQuery implements \JsonSerializable
 	{
 		return new static(
 			$array["id"],
-			$array["from"] ? User::fromArray($array["from"]) : null,
+			User::fromArray($array["from"]),
 			$array["message"] ? MaybeInaccessibleMessage::fromArray($array["message"]) : null,
 			$array["inline_message_id"],
 			$array["chat_instance"] ?? "",
@@ -45,17 +45,28 @@ class CallbackQuery implements \JsonSerializable
 		);
 	}
 
-	public function jsonSerialize()
+	public function jsonSerialize(): array
 	{
-		return [
+		$array = [
 			"id" => $this->id,
-			"from" => $this->from ? $this->from->jsonSerialize() : null,
-			"message" => $this->message ? $this->message->jsonSerialize() : null,
-			"inline_message_id" => $this->inlineMessageId,
+			"from" => $this->from->jsonSerialize(),
 			"chat_instance" => $this->chatInstance,
-			"data" => $this->data,
-			"game_short_name" => $this->gameShortName,
 		];
+
+		if (isset($this->message)) {
+			$array["message"] = $this->message->jsonSerialize();
+		}
+		if (isset($this->inlineMessageId)) {
+			$array["inline_message_id"] = $this->inlineMessageId;
+		}
+		if (isset($this->data)) {
+			$array["data"] = $this->data;
+		}
+		if (isset($this->gameShortName)) {
+			$array["game_short_name"] = $this->gameShortName;
+		}
+
+		return $array;
 	}
 
 	/**
@@ -75,9 +86,9 @@ class CallbackQuery implements \JsonSerializable
 	}
 
 	/**
-	 * @return MaybeInaccessibleMessage|null
+	 * @return Message|InaccessibleMessage|null
 	 */
-	public function getMessage(): ?MaybeInaccessibleMessage
+	public function getMessage(): Message|InaccessibleMessage|null
 	{
 		return $this->message;
 	}

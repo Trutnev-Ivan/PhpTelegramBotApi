@@ -48,6 +48,16 @@ class TextQuote implements \JsonSerializable
 		);
 	}
 
+	public function jsonSerialize(): array
+	{
+		return [
+			"text" => $this->text,
+			"entities" => $this->entities ? array_map(fn ($entity) => $entity->jsonSerialize(), $this->entities) : [],
+			"position" => $this->position,
+			"is_manual" => $this->isManual,
+		];
+	}
+
 	public function getText(): string
 	{
 		return $this->text;
@@ -66,15 +76,5 @@ class TextQuote implements \JsonSerializable
 	public function isManual(): bool
 	{
 		return $this->isManual;
-	}
-
-	public function jsonSerialize()
-	{
-		return [
-			"text" => $this->text,
-			"entities" => $this->entities ? array_map(fn ($entity) => $entity->jsonSerialize(), $this->entities) : [],
-			"position" => $this->position,
-			"is_manual" => $this->isManual,
-		];
 	}
 }

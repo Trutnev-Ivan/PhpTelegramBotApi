@@ -33,7 +33,7 @@ class ChatPhoto implements \JsonSerializable
 		);
 	}
 
-	public function jsonSerialize()
+	public function jsonSerialize(): array
 	{
 		return [
 			"small_file_id" => $this->smallFileId,

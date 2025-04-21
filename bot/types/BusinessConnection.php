@@ -33,7 +33,7 @@ class BusinessConnection implements \JsonSerializable
 	{
 		return new static(
 			$array["id"] ?? "",
-			$array["user"] ? User::fromArray($array["user"]) : null,
+			User::fromArray($array["user"]),
 			$array["user_chat_id"] ?? 0,
 			$array["date"] ?? 0,
 			$array["can_reply"] ?? false,
@@ -41,11 +41,11 @@ class BusinessConnection implements \JsonSerializable
 		);
 	}
 
-	public function jsonSerialize()
+	public function jsonSerialize(): array
 	{
 		return [
 			"id" => $this->id,
-			"user" => $this->user ? $this->user->jsonSerialize() : null,
+			"user" => $this->user->jsonSerialize(),
 			"user_chat_id" => $this->userChatId,
 			"date" => $this->date,
 			"can_reply" => $this->canReply,

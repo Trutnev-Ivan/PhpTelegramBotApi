@@ -25,12 +25,18 @@ class ForumTopicEdited implements \JsonSerializable
 		);
 	}
 
-	public function jsonSerialize()
+	public function jsonSerialize(): array
 	{
-		return [
-			"name" => $this->name,
-			"icon_custom_emoji_id" => $this->iconCustomEmojiId,
-		];
+		$array = [];
+
+		if (isset($this->name)){
+			$array["name"] = $this->name;
+		}
+		if (isset($this->iconCustomEmojiId)){
+			$array["icon_custom_emoji_id"] = $this->iconCustomEmojiId;
+		}
+
+		return $array;
 	}
 
 	/**

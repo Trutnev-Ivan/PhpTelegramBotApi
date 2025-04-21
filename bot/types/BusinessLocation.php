@@ -25,12 +25,17 @@ class BusinessLocation implements \JsonSerializable
 		);
 	}
 
-	public function jsonSerialize()
+	public function jsonSerialize(): array
 	{
-		return [
+		$array = [
 			"address" => $this->address,
-			"location" => $this->location ? $this->location->jsonSerialize() : null,
 		];
+
+		if (isset($this->location)){
+			$array["location"] = $this->location->jsonSerialize();
+		}
+
+		return $array;
 	}
 
 	/**

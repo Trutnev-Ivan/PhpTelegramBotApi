@@ -19,7 +19,7 @@ class VideoChatScheduled implements \JsonSerializable
 		return new static($array["start_date"] ?? 0);
 	}
 
-	public function jsonSerialize()
+	public function jsonSerialize(): array
 	{
 		return [
 			"start_date" => $this->startDate,

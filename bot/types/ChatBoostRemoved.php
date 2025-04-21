@@ -8,13 +8,17 @@ class ChatBoostRemoved implements \JsonSerializable
 	protected Chat $chat;
 	protected string $boostId;
 	protected int $removeDate;
-	protected ChatBoostSource $source;
+	protected ChatBoostSourcePremium
+	| ChatBoostSourceGiftCode
+	| ChatBoostSourceGiveaway $source;
 
 	public function __construct(
 		Chat $chat = null,
 		string $boostId = "",
 		int $removeDate = 0,
-		ChatBoostSource $source = null
+		ChatBoostSourcePremium
+		| ChatBoostSourceGiftCode
+		| ChatBoostSourceGiveaway $source = null
 	)
 	{
 		$this->chat = $chat;
@@ -26,20 +30,20 @@ class ChatBoostRemoved implements \JsonSerializable
 	public static function fromArray(array $array): ChatBoostRemoved
 	{
 		return new static(
-			$array["chat"] ? Chat::fromArray($array["chat"]) : null,
+			Chat::fromArray($array["chat"]),
 			$array["boost_id"] ?? "",
 			$array["remove_date"] ?? 0,
-			$array["source"] ? ChatBoostSource::fromArray($array["source"]) : null
+			ChatBoostSource::fromArray($array["source"])
 		);
 	}
 
-	public function jsonSerialize()
+	public function jsonSerialize(): array
 	{
 		return [
-			"chat" => $this->chat ? $this->chat->jsonSerialize() : null,
+			"chat" => $this->chat->jsonSerialize(),
 			"boost_id" => $this->boostId,
 			"remove_date" => $this->removeDate,
-			"source" => $this->source ? $this->source->jsonSerialize() : null,
+			"source" => $this->source->jsonSerialize(),
 		];
 	}
 
@@ -68,9 +72,13 @@ class ChatBoostRemoved implements \JsonSerializable
 	}
 
 	/**
-	 * @return ChatBoostSource
+	 * @return ChatBoostSourcePremium
+	 * | ChatBoostSourceGiftCode
+	 * | ChatBoostSourceGiveaway
 	 */
-	public function getSource(): ChatBoostSource
+	public function getSource(): ChatBoostSourcePremium
+	| ChatBoostSourceGiftCode
+	| ChatBoostSourceGiveaway
 	{
 		return $this->source;
 	}

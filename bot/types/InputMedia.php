@@ -3,15 +3,23 @@
 /**
  * @see https://core.telegram.org/bots/api#inputmedia
  */
-class InputMedia implements \JsonSerializable
+class InputMedia
 {
-
-	//TODO: ЗАПОЛНИТ после
-	
-	public function jsonSerialize()
+	public static function fromArray(array $array): InputMediaAnimation|InputMediaDocument|InputMediaAudio|InputMediaPhoto|InputMediaVideo
 	{
-		return [
-			
-		];
+		switch ($array["type"]) {
+			case "animation":
+				return InputMediaAnimation::fromArray($array);
+			case "document":
+				return InputMediaDocument::fromArray($array);
+			case "audio":
+				return InputMediaAudio::fromArray($array);
+			case "photo":
+				return InputMediaPhoto::fromArray($array);
+			case "video":
+				return InputMediaVideo::fromArray($array);
+			default:
+				throw new \InvalidArgumentException("Unsupported media type: " . $array["type"]);
+		}
 	}
 }

@@ -3,20 +3,19 @@
 /**
  * @see https://core.telegram.org/bots/api#paidmedia
  */
-class PaidMedia implements \JsonSerializable
+class PaidMedia
 {
-
-	//TODO: ЗАПОЛНИТЬ 
-
-	public static function fromArray(array $array): PaidMedia
+	public static function fromArray(array $array): PaidMediaPhoto|PaidMediaVideo|PaidMediaPreview
 	{
-
-	}
-
-	public function jsonSerialize()
-	{
-		return [
-
-		];
+		switch ($array["type"]) {
+			case "photo":
+				return PaidMediaPhoto::fromArray($array);
+			case "video":
+				return PaidMediaVideo::fromArray($array);
+			case "preview":
+				return PaidMediaPreview::fromArray($array);
+			default:
+				throw new \InvalidArgumentException("Invalid PaidMedia type: " . $array["type"]);
+		}
 	}
 }

@@ -9,27 +9,31 @@ class ChatMemberLeft implements \JsonSerializable
 	protected User $user;
 
 	public function __construct(
-		string $status,
-		User $user
+		string $status = "left",
+		User $user = null
 	)
 	{
 		$this->status = $status;
 		$this->user = $user;
+
+		if ($this->status != "left"){
+			throw new \InvalidArgumentException("Invalid status. Must be 'left', got {$this->status}");
+		}
 	}
 
 	public static function fromArray(array $array): ChatMemberLeft
 	{
 		return new static(
-			$array["status"] ?? "",
-			$array["user"] ? User::fromArray($array["user"]) : null
+			$array["status"] ?? "left",
+			User::fromArray($array["user"])
 		);
 	}
 
-	public function jsonSerialize()
+	public function jsonSerialize(): array
 	{
 		return [
 			"status" => $this->status,
-			"user" => $this->user ? $this->user->jsonSerialize() : null,
+			"user" => $this->user->jsonSerialize(),
 		];
 	}
 

@@ -79,7 +79,7 @@ class Sticker implements \JsonSerializable
 
 	public function jsonSerialize(): array
 	{
-		return [
+		$array = [
 			"file_id" => $this->fileId,
 			"file_unique_id" => $this->fileUniqueId,
 			"type" => $this->type,
@@ -87,15 +87,32 @@ class Sticker implements \JsonSerializable
 			"height" => $this->height,
 			"is_animated" => $this->isAnimated,
 			"is_video" => $this->isVideo,
-			"thumbnail" => $this->thumbnail ? $this->thumbnail->jsonSerialize() : null,
-			"emoji" => $this->emoji,
-			"set_name" => $this->setName,
-			"premium_animation" => $this->premiumAnimation ? $this->premiumAnimation->jsonSerialize() : null,
-			"mask_position" => $this->maskPosition ? $this->maskPosition->jsonSerialize() : null,
-			"custom_emoji_id" => $this->customEmojiId,
 			"needs_repainting" => $this->needsRepainting,
-			"file_size" => $this->fileSize,
 		];
+
+		if (isset($this->thumbnail)) {
+			$array["thumbnail"] = $this->thumbnail->jsonSerialize();
+		}
+		if (isset($this->emoji)) {
+			$array["emoji"] = $this->emoji;
+		}
+		if (isset($this->setName)) {
+			$array["set_name"] = $this->setName;
+		}
+		if (isset($this->premiumAnimation)) {
+			$array["premium_animation"] = $this->premiumAnimation->jsonSerialize();
+		}
+		if (isset($this->maskPosition)) {
+			$array["mask_position"] = $this->maskPosition->jsonSerialize();
+		}
+		if (isset($this->customEmojiId)) {
+			$array["custom_emoji_id"] = $this->customEmojiId;
+		}
+		if (isset($this->fileSize)) {
+			$array["file_size"] = $this->fileSize;
+		}
+
+		return $array;
 	}
 
 	/**

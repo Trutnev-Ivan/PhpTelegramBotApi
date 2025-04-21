@@ -53,7 +53,7 @@ class Game implements \JsonSerializable
 			$array["title"] ?? "",
 			$array["description"] ?? "",
 			array_map(fn($photo) => PhotoSize::fromArray($photo), $array["photo"] ?? []),
-			$array["text"] ?? null,
+			$array["text"],
 			array_map(fn($entity) => MessageEntity::fromArray($entity), $array["text_entities"] ?? []),
 			$array["animation"] ? Animation::fromArray($array["animation"]) : null,
 		);
@@ -61,14 +61,21 @@ class Game implements \JsonSerializable
 
 	public function jsonSerialize(): array
 	{
-		return [
+		$array = [
 			"title" => $this->title,
 			"description" => $this->description,
 			"photo" => $this->photo ? array_map(fn($photo) => $photo->jsonSerialize(), $this->photo) : [],
-			"text" => $this->text,
 			"text_entities" => $this->textEntities ? array_map(fn($entity) => $entity->jsonSerialize(), $this->textEntities) : [],
-			"animation" => $this->animation ? $this->animation->jsonSerialize() : null,
 		];
+
+		if (isset($this->text)) {
+			$array["text"] = $this->text;
+		}
+		if (isset($this->animation)) {
+			$array["animation"] = $this->animation->jsonSerialize();
+		}
+
+		return $array;
 	}
 
 	/**

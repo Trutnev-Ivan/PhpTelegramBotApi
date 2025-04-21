@@ -10,30 +10,34 @@ class ChatMemberMember implements \JsonSerializable
 	protected int $untilDate;
 
 	public function __construct(
-		string $status,
-		User $user,
+		string $status = "member",
+		User $user = null,
 		int $untilDate = 0
 	)
 	{
 		$this->status = $status;
 		$this->user = $user;
 		$this->untilDate = $untilDate;
+
+		if ($this->status != "member"){
+			throw new \InvalidArgumentException("Invalid status provided for ChatMemberMember. Must be 'member', got {$this->status}'");
+		}
 	}
 
 	public static function fromArray(array $array): ChatMemberMember
 	{
 		return new static(
-			$array["status"] ?? "",
-				$array["user"] ? User::fromArray($array["user"]) : null,
+			$array["status"] ?? "member",
+			User::fromArray($array["user"]),
 			$array["until_date"] ?? 0
 		);
 	}
 
-	public function jsonSerialize()
+	public function jsonSerialize(): array
 	{
 		return [
 			"status" => $this->status,
-			"user" => $this->user ? $this->user->jsonSerialize() : null,
+			"user" => $this->user->jsonSerialize(),
 			"until_date" => $this->untilDate,
 		];
 	}

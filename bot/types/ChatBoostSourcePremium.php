@@ -9,27 +9,31 @@ class ChatBoostSourcePremium implements \JsonSerializable
 	protected User $user;
 
 	public function __construct(
-		string $source,
+		string $source = "premium",
 		User $user = null
 	)
 	{
 		$this->source = $source;
 		$this->user = $user;
+
+		if ($this->source != "premium"){
+			throw new \Exception("Invalid source type. Expected 'premium', got '{$source}'");
+		}
 	}
 
 	public static function fromArray(array $array): ChatBoostSourcePremium
 	{
 		return new static(
-			$array["source"] ?? "",
-			$array["user"] ? User::fromArray($array["user"]) : null
+			$array["source"] ?? "premium",
+			User::fromArray($array["user"])
 		);
 	}
 
-	public function jsonSerialize()
+	public function jsonSerialize(): array
 	{
 		return [
 			"source" => $this->source,
-			"user" => $this->user ? $this->user->jsonSerialize() : null,
+			"user" => $this->user->jsonSerialize(),
 		];
 	}
 

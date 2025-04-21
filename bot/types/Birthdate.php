@@ -29,7 +29,7 @@ class Birthdate implements \JsonSerializable
 		);
 	}
 
-	public function jsonSerialize()
+	public function jsonSerialize(): array
 	{
 		return [
 			"day" => $this->day,

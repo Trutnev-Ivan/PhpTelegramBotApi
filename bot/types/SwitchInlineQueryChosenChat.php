@@ -37,15 +37,20 @@ class SwitchInlineQueryChosenChat implements \JsonSerializable
 		);
 	}
 
-	public function jsonSerialize()
+	public function jsonSerialize(): array
 	{
-		return [
-			"query" => $this->query,
+		$array = [
 			"allow_user_chats" => $this->allowUserChats,
 			"allow_bot_chats" => $this->allowBotChats,
 			"allow_group_chats" => $this->allowGroupChats,
 			"allow_channel_chats" => $this->allowChannelChats,
 		];
+
+		if (isset($this->query)){
+			$array["query"] = $this->query;
+		}
+
+		return $array;
 	}
 
 	/**

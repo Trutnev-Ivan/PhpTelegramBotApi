@@ -35,12 +35,22 @@ class OrderInfo implements \JsonSerializable
 
 	public function jsonSerialize(): array
 	{
-		return [
-			"name" => $this->name,
-			"phone_number" => $this->phoneNumber,
-			"email" => $this->email,
-			"shipping_address" => $this->shippingAddress ? $this->shippingAddress->jsonSerialize() : null,
-		];
+		$array = [];
+
+		if (isset($this->name)) {
+			$array["name"] = $this->name;
+		}
+		if (isset($this->phoneNumber)) {
+			$array["phone_number"] = $this->phoneNumber;
+		}
+		if (isset($this->email)) {
+			$array["email"] = $this->email;
+		}
+		if (isset($this->shippingAddress)) {
+			$array["shipping_address"] = $this->shippingAddress->jsonSerialize();
+		}
+
+		return $array;
 	}
 
 	/**

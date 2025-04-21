@@ -21,7 +21,8 @@ class Chat implements \JsonSerializable
 		?string $firstName = null,
 		?string $lastName = null,
 		bool $isForum = false
-	){
+	)
+	{
 		$this->id = $id;
 		$this->type = $type;
 		$this->title = $title;
@@ -42,6 +43,30 @@ class Chat implements \JsonSerializable
 			$array["last_name"],
 			$array["is_forum"] ?? false
 		);
+	}
+
+	public function jsonSerialize(): array
+	{
+		$array = [
+			"id" => $this->id,
+			"type" => $this->type,
+			"is_forum" => $this->isForum,
+		];
+
+		if (isset($this->title)) {
+			$array["title"] = $this->title;
+		}
+		if (isset($this->username)) {
+			$array["username"] = $this->username;
+		}
+		if (isset($this->firstName)) {
+			$array["first_name"] = $this->firstName;
+		}
+		if (isset($this->lastName)) {
+			$array["last_name"] = $this->lastName;
+		}
+
+		return $array;
 	}
 
 	public function getId(): int
@@ -77,18 +102,5 @@ class Chat implements \JsonSerializable
 	public function isForum(): bool
 	{
 		return $this->isForum;
-	}
-
-	public function jsonSerialize()
-	{
-		return [
-			"id" => $this->id,
-			"type" => $this->type,
-			"title" => $this->title,
-			"username" => $this->username,
-			"first_name" => $this->firstName,
-			"last_name" => $this->lastName,
-			"is_forum" => $this->isForum,
-		];
 	}
 }

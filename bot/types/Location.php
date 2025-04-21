@@ -41,16 +41,27 @@ class Location implements \JsonSerializable
 		);
 	}
 
-	public function jsonSerialize()
+	public function jsonSerialize(): array
 	{
-		return [
+		$array = [
 			"latitude" => $this->latitude,
 			"longitude" => $this->longitude,
-			"horizontal_accuracy" => $this->horizontalAccuracy,
-			"live_period" => $this->livePeriod,
-			"heading" => $this->heading,
-			"proximity_alert_radius" => $this->proximityAlertRadius,
 		];
+
+		if (isset($this->horizontalAccuracy)) {
+			$array["horizontal_accuracy"] = $this->horizontalAccuracy;
+		}
+		if (isset($this->livePeriod)) {
+			$array["live_period"] = $this->livePeriod;
+		}
+		if (isset($this->heading)) {
+			$array["heading"] = $this->heading;
+		}
+		if (isset($this->proximityAlertRadius)) {
+			$array["proximity_alert_radius"] = $this->proximityAlertRadius;
+		}
+
+		return $array;
 	}
 
 	/**

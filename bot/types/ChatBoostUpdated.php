@@ -20,16 +20,16 @@ class ChatBoostUpdated implements \JsonSerializable
 	public static function fromArray(array $array): ChatBoostUpdated
 	{
 		return new static(
-			$array["chat"] ? Chat::fromArray($array["chat"]) : null,
-			$array["boost"] ? ChatBoost::fromArray($array["boost"]) : null
+			Chat::fromArray($array["chat"]),
+			ChatBoost::fromArray($array["boost"])
 		);
 	}
 
-	public function jsonSerialize()
+	public function jsonSerialize(): array
 	{
 		return [
-			"chat" => $this->chat ? $this->chat->jsonSerialize() : null,
-			"boost" => $this->boost ? $this->boost->jsonSerialize() : null,
+			"chat" => $this->chat->jsonSerialize(),
+			"boost" => $this->boost->jsonSerialize(),
 		];
 	}
 

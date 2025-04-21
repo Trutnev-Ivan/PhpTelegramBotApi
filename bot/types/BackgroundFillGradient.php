@@ -11,29 +11,33 @@ class BackgroundFillGradient implements \JsonSerializable
 	protected int $rotationAngle;
 
 	public function __construct(
-		string $type,
-		int $topColor,
-		int $bottomColor,
-		int $rotationAngle
+		string $type = "gradient",
+		int $topColor = 0,
+		int $bottomColor = 0,
+		int $rotationAngle = 0
 	)
 	{
 		$this->type = $type;
 		$this->topColor = $topColor;
 		$this->bottomColor = $bottomColor;
 		$this->rotationAngle = $rotationAngle;
+
+		if ($this->type != "gradient"){
+			throw new \InvalidArgumentException("Type must be 'gradient'");
+		}
 	}
 
 	public static function fromArray(array $array): BackgroundFillGradient
 	{
 		return new static(
-			$array["type"] ?? "",
+			$array["type"] ?? "gradient",
 			$array["top_color"] ?? 0,
 			$array["bottom_color"] ?? 0,
 			$array["rotation_angle"] ?? 0
 		);
 	}
 
-	public function jsonSerialize()
+	public function jsonSerialize(): array
 	{
 		return [
 			"type" => $this->type,

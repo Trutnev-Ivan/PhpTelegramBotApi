@@ -9,23 +9,27 @@ class PaidMediaVideo implements \JsonSerializable
 	protected Video $video;
 
 	public function __construct(
-		string $type,
-		Video $video
+		string $type = "video",
+		Video $video = null
 	)
 	{
 		$this->type = $type;
 		$this->video = $video;
+
+		if ($this->type != "video"){
+			throw new \InvalidArgumentException("Type must be 'video', got {$this->type}");
+		}
 	}
 
 	public static function fromArray(array $array): PaidMediaVideo
 	{
 		return new static(
-			$array["type"] ?? "",
-			$array["video"] ? Video::fromArray($array["video"]) : null
+			$array["type"] ?? "video",
+			Video::fromArray($array["video"])
 		);
 	}
 
-	public function jsonSerialize()
+	public function jsonSerialize(): array
 	{
 		return [
 			"type" => $this->type,

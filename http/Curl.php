@@ -32,7 +32,6 @@ class Curl extends Base
 			}
 		} elseif ($fields = $this->getBody()) {
 			if (is_array($fields)) {
-
 				foreach ($fields as $key => $value) {
 					if ($value instanceof InputFile) {
 						$fields[$key] = new \CURLFile(
@@ -40,6 +39,16 @@ class Curl extends Base
 							$value->getMimeType(),
 							$value->getPostName()
 						);;
+					} elseif (is_array($value)) {
+						foreach ($value as $subKey => $subValue) {
+							if ($subValue instanceof InputFile) {
+								$fields[$key][$subKey] = new \CURLFile(
+									$subValue->getPath(),
+									$subValue->getMimeType(),
+									$subValue->getPostName()
+								);
+							}
+						}
 					}
 				}
 			}

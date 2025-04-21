@@ -7,15 +7,15 @@ class BackgroundTypePattern implements \JsonSerializable
 {
 	protected string $type;
 	protected Document $document;
-	protected BackgroundFill $fill;
+	protected BackgroundFillSolid|BackgroundFillGradient|BackgroundFillFreeformGradient $fill;
 	protected int $intensity;
 	protected bool $isInverted;
 	protected bool $isMoving;
 
 	public function __construct(
-		string $type,
+		string $type = "pattern",
 		Document $document = null,
-		BackgroundFill $fill = null,
+		BackgroundFillSolid|BackgroundFillGradient|BackgroundFillFreeformGradient $fill = null,
 		int $intensity = 100,
 		bool $isInverted = false,
 		bool $isMoving = false
@@ -27,26 +27,30 @@ class BackgroundTypePattern implements \JsonSerializable
 		$this->intensity = $intensity;
 		$this->isInverted = $isInverted;
 		$this->isMoving = $isMoving;
+
+		if ($this->type != "pattern"){
+			throw new \InvalidArgumentException("Invalid background type. Must be 'pattern'");
+		}
 	}
 
 	public static function fromArray(array $array): BackgroundTypePattern
 	{
 		return new static(
-			$array["type"] ?? "",
-			$array["document"] ? Document::fromArray($array["document"]) : null,
-			$array["fill"] ? BackgroundFill::fromArray($array["fill"]) : null,
+			$array["type"] ?? "pattern",
+			Document::fromArray($array["document"]),
+			BackgroundFill::fromArray($array["fill"]),
 			$array["intensity"] ?? 100,
 			$array["is_inverted"] ?? false,
 			$array["is_moving"] ?? false
 		);
 	}
 
-	public function jsonSerialize()
+	public function jsonSerialize(): array
 	{
 		return [
 			"type" => $this->type,
-			"document" => $this->document ? $this->document->jsonSerialize() : null,
-			"fill" => $this->fill ? $this->fill->jsonSerialize() : null,
+			"document" => $this->document->jsonSerialize(),
+			"fill" => $this->fill->jsonSerialize(),
 			"intensity" => $this->intensity,
 			"is_inverted" => $this->isInverted,
 			"is_moving" => $this->isMoving,
@@ -72,7 +76,7 @@ class BackgroundTypePattern implements \JsonSerializable
 	/**
 	 * @return BackgroundFill
 	 */
-	public function getFill(): BackgroundFill
+	public function getFill(): BackgroundFillSolid|BackgroundFillGradient|BackgroundFillFreeformGradient
 	{
 		return $this->fill;
 	}

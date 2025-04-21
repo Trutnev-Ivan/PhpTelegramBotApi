@@ -3,17 +3,22 @@
 /**
  * @see https://core.telegram.org/bots/api#chatboostsource
  */
-class ChatBoostSource implements \JsonSerializable
+class ChatBoostSource
 {
-	//TODO: заполнить после создания остальных классов
-
-	public static function fromArray(array $array): ChatBoostSource
+	public static function fromArray(array $array):
+	ChatBoostSourcePremium
+	| ChatBoostSourceGiftCode
+	| ChatBoostSourceGiveaway
 	{
+		switch ($array["source"]){
+			case "premium":
+				return ChatBoostSourcePremium::fromArray($array);
+			case "gift_code":
+				return ChatBoostSourceGiftCode::fromArray($array);
+			case "giveaway":
+				return ChatBoostSourceGiveaway::fromArray($array);
+		}
 
-	}
-
-	public function jsonSerialize()
-	{
-		return [];
+		throw new \InvalidArgumentException("Unknown source type: '{$array["source"]}'");
 	}
 }

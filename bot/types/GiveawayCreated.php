@@ -14,14 +14,18 @@ class GiveawayCreated implements \JsonSerializable
 
 	public static function fromArray(array $array): GiveawayCreated
 	{
-		return new static($array["prize_star_count"] ?? null);
+		return new static($array["prize_star_count"]);
 	}
 
 	public function jsonSerialize(): array
 	{
-		return [
-			"prize_star_count" => $this->prizeStarCount,
-		];
+		$array = [];
+
+		if (isset($this->prizeStarCount)){
+			$array["prize_star_count"] = $this->prizeStarCount;
+		}
+
+		return $array;
 	}
 
 	/**

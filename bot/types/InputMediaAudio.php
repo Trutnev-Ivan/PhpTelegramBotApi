@@ -19,7 +19,7 @@ class InputMediaAudio implements \JsonSerializable
 	protected ?string $title;
 
 	public function __construct(
-		string $type = "",
+		string $type = "audio",
 		string $media = "",
 		?string $thumbnail = null,
 		?string $caption = null,
@@ -40,6 +40,10 @@ class InputMediaAudio implements \JsonSerializable
 		$this->performer = $performer;
 		$this->title = $title;
 
+		if ($this->type != "audio"){
+			throw new \InvalidArgumentException("Input media type must be 'audio', got {$this->type}");
+		}
+
 		foreach ($this->captionEntities as $entity) {
 			if (!$entity instanceof MessageEntity) {
 				throw new \InvalidArgumentException("All caption entities must be of type " . MessageEntity::class);
@@ -50,7 +54,7 @@ class InputMediaAudio implements \JsonSerializable
 	public static function fromArray(array $array): InputMediaAudio
 	{
 		return new static(
-			$array["type"] ?? "",
+			$array["type"] ?? "audio",
 			$array["media"] ?? "",
 			$array["thumbnail"],
 			$array["caption"],
@@ -62,19 +66,34 @@ class InputMediaAudio implements \JsonSerializable
 		);
 	}
 
-	public function jsonSerialize()
+	public function jsonSerialize(): array
 	{
-		return [
+		$array = [
 			"type" => $this->type,
 			"media" => $this->media,
-			"thumbnail" => $this->thumbnail,
-			"caption" => $this->caption,
-			"parse_mode" => $this->parseMode,
 			"caption_entities" => $this->captionEntities ? array_map(fn($entity) => $entity->jsonSerialize(), $this->captionEntities) : [],
-			"duration" => $this->duration,
-			"performer" => $this->performer,
-			"title" => $this->title,
 		];
+
+		if (isset($this->thumbnail)) {
+			$array["thumbnail"] = $this->thumbnail;
+		}
+		if (isset($this->caption)) {
+			$array["caption"] = $this->caption;
+		}
+		if (isset($this->parseMode)) {
+			$array["parse_mode"] = $this->parseMode;
+		}
+		if (isset($this->duration)) {
+			$array["duration"] = $this->duration;
+		}
+		if (isset($this->performer)) {
+			$array["performer"] = $this->performer;
+		}
+		if (isset($this->title)) {
+			$array["title"] = $this->title;
+		}
+
+		return $array;
 	}
 
 	/**

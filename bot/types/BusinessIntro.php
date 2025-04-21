@@ -25,16 +25,16 @@ class BusinessIntro implements \JsonSerializable
 		return new static(
 			$array["title"] ?? "",
 			$array["message"] ?? "",
-			$array["sticker"] ? Sticker::fromArray($array["sticker"]) : null
+			Sticker::fromArray($array["sticker"])
 		);
 	}
 
-	public function jsonSerialize()
+	public function jsonSerialize(): array
 	{
 		return [
 			"title" => $this->title,
 			"message" => $this->message,
-			"sticker" => $this->sticker ? $this->sticker->jsonSerialize() : null,
+			"sticker" => $this->sticker->jsonSerialize(),
 		];
 	}
 

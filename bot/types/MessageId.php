@@ -22,7 +22,7 @@ class MessageId implements \JsonSerializable
 		return $this->messageId;
 	}
 
-	public function jsonSerialize()
+	public function jsonSerialize(): array
 	{
 		return [
 			"message_id" => $this->messageId,

@@ -25,7 +25,7 @@ class BusinessOpeningHoursInterval implements \JsonSerializable
 		);
 	}
 
-	public function jsonSerialize()
+	public function jsonSerialize(): array
 	{
 		return [
 			"opening_minute" => $this->openingMinute,

@@ -109,32 +109,81 @@ class Update implements \JsonSerializable
 
 	public function jsonSerialize(): array
 	{
-		return [
+		$array = [
 			"update_id" => $this->updateId,
-			"message" => $this->message ? $this->message->jsonSerialize() : null,
-			"edited_message" => $this->editedMessage ? $this->editedMessage->jsonSerialize() : null,
-			"channel_post" => $this->channelPost ? $this->channelPost->jsonSerialize() : null,
-			"edited_channel_post" => $this->editedChannelPost ? $this->editedChannelPost->jsonSerialize() : null,
-			"business_connection" => $this->businessConnection ? $this->businessConnection->jsonSerialize() : null,
-			"business_message" => $this->businessMessage ? $this->businessMessage->jsonSerialize() : null,
-			"edited_business_message" => $this->editedBusinessMessage ? $this->editedBusinessMessage->jsonSerialize() : null,
-			"deleted_business_messages" => $this->deletedBusinessMessages ? $this->deletedBusinessMessages->jsonSerialize() : null,
-			"message_reaction" => $this->messageReaction ? $this->messageReaction->jsonSerialize() : null,
-			"message_reaction_count" => $this->messageReactionCount ? $this->messageReactionCount->jsonSerialize() : null,
-			"inline_query" => $this->inlineQuery ? $this->inlineQuery->jsonSerialize() : null,
-			"chosen_inline_result" => $this->chosenInlineResult ? $this->chosenInlineResult->jsonSerialize() : null,
-			"callback_query" => $this->callbackQuery ? $this->callbackQuery->jsonSerialize() : null,
-			"shipping_query" => $this->shippingQuery ? $this->shippingQuery->jsonSerialize() : null,
-			"pre_checkout_query" => $this->preCheckoutQuery ? $this->preCheckoutQuery->jsonSerialize() : null,
-			"purchased_paid_media" => $this->purchasedPaidMedia ? $this->purchasedPaidMedia->jsonSerialize() : null,
-			"poll" => $this->poll ? $this->poll->jsonSerialize() : null,
-			"poll_answer" => $this->pollAnswer ? $this->pollAnswer->jsonSerialize() : null,
-			"my_chat_member" => $this->myChatMember ? $this->myChatMember->jsonSerialize() : null,
-			"chat_member" => $this->chatMember ? $this->chatMember->jsonSerialize() : null,
-			"chat_join_request" => $this->chatJoinRequest ? $this->chatJoinRequest->jsonSerialize() : null,
-			"chat_boost" => $this->chatBoost ? $this->chatBoost->jsonSerialize() : null,
-			"removed_chat_boost" => $this->removedChatBoost ? $this->removedChatBoost->jsonSerialize() : null,
 		];
+
+		if (isset($this->message)) {
+			$array["message"] = $this->message->jsonSerialize();
+		}
+		if (isset($this->editedMessage)) {
+			$array["edited_message"] = $this->editedMessage->jsonSerialize();
+		}
+		if (isset($this->channelPost)) {
+			$array["channel_post"] = $this->channelPost->jsonSerialize();
+		}
+		if (isset($this->editedChannelPost)) {
+			$array["edited_channel_post"] = $this->editedChannelPost->jsonSerialize();
+		}
+		if (isset($this->businessConnection)) {
+			$array["business_connection"] = $this->businessConnection->jsonSerialize();
+		}
+		if (isset($this->businessMessage)) {
+			$array["business_message"] = $this->businessMessage->jsonSerialize();
+		}
+		if (isset($this->editedBusinessMessage)) {
+			$array["edited_business_message"] = $this->editedBusinessMessage->jsonSerialize();
+		}
+		if (isset($this->deletedBusinessMessages)) {
+			$array["deleted_business_messages"] = $this->deletedBusinessMessages->jsonSerialize();
+		}
+		if (isset($this->messageReaction)) {
+			$array["message_reaction"] = $this->messageReaction->jsonSerialize();
+		}
+		if (isset($this->messageReactionCount)) {
+			$array["message_reaction_count"] = $this->messageReactionCount->jsonSerialize();
+		}
+		if (isset($this->inlineQuery)) {
+			$array["inline_query"] = $this->inlineQuery->jsonSerialize();
+		}
+		if (isset($this->chosenInlineResult)) {
+			$array["chosen_inline_result"] = $this->chosenInlineResult->jsonSerialize();
+		}
+		if (isset($this->callbackQuery)) {
+			$array["callback_query"] = $this->callbackQuery->jsonSerialize();
+		}
+		if (isset($this->shippingQuery)) {
+			$array["shipping_query"] = $this->shippingQuery->jsonSerialize();
+		}
+		if (isset($this->preCheckoutQuery)) {
+			$array["pre_checkout_query"] = $this->preCheckoutQuery->jsonSerialize();
+		}
+		if (isset($this->purchasedPaidMedia)) {
+			$array["purchased_paid_media"] = $this->purchasedPaidMedia->jsonSerialize();
+		}
+		if (isset($this->poll)) {
+			$array["poll"] = $this->poll->jsonSerialize();
+		}
+		if (isset($this->pollAnswer)) {
+			$array["poll_answer"] = $this->pollAnswer->jsonSerialize();
+		}
+		if (isset($this->myChatMember)) {
+			$array["my_chat_member"] = $this->myChatMember->jsonSerialize();
+		}
+		if (isset($this->chatMember)) {
+			$array["chat_member"] = $this->chatMember->jsonSerialize();
+		}
+		if (isset($this->chatJoinRequest)) {
+			$array["chat_join_request"] = $this->chatJoinRequest->jsonSerialize();
+		}
+		if (isset($this->chatBoost)) {
+			$array["chat_boost"] = $this->chatBoost->jsonSerialize();
+		}
+		if (isset($this->removedChatBoost)) {
+			$array["removed_chat_boost"] = $this->removedChatBoost->jsonSerialize();
+		}
+
+		return $array;
 	}
 
 	/**

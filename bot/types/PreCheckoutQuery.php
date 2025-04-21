@@ -36,7 +36,7 @@ class PreCheckoutQuery implements \JsonSerializable
 	{
 		return new static(
 			$array["id"] ?? "",
-			$array["from"] ? User::fromArray($array["from"]) : null,
+			User::fromArray($array["from"]),
 			$array["currency"] ?? "",
 			$array["total_amount"] ?? 0,
 			$array["invoice_payload"] ?? "",
@@ -47,15 +47,22 @@ class PreCheckoutQuery implements \JsonSerializable
 
 	public function jsonSerialize(): array
 	{
-		return [
+		$array = [
 			"id" => $this->id,
-			"from" => $this->from ? $this->from->jsonSerialize() : null,
+			"from" => $this->from->jsonSerialize(),
 			"currency" => $this->currency,
 			"total_amount" => $this->totalAmount,
 			"invoice_payload" => $this->invoicePayload,
-			"shipping_option_id" => $this->shippingOptionId,
-			"order_info" => $this->orderInfo ? $this->orderInfo->jsonSerialize() : null,
 		];
+
+		if (isset($this->shippingOptionId)){
+			$array["shipping_option_id"] = $this->shippingOptionId;
+		}
+		if (isset($this->orderInfo)){
+			$array["order_info"] = $this->orderInfo->jsonSerialize();
+		}
+
+		return $array;
 	}
 
 	/**

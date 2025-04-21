@@ -33,16 +33,16 @@ class BusinessMessagesDeleted implements \JsonSerializable
 	{
 		return new static(
 			$array["business_connection_id"] ?? "",
-			$array["chat"] ? Chat::fromArray($array["chat"]) : null,
+			Chat::fromArray($array["chat"]),
 			$array["message_ids"] ?? []
 		);
 	}
 
-	public function jsonSerialize()
+	public function jsonSerialize(): array
 	{
 		return [
 			"business_connection_id" => $this->businessConnectionId,
-			"chat" => $this->chat ? $this->chat->jsonSerialize() : null,
+			"chat" => $this->chat->jsonSerialize(),
 			"message_ids" => $this->messageIds,
 		];
 	}

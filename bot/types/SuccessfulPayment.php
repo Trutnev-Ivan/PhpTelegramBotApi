@@ -59,18 +59,27 @@ class SuccessfulPayment implements \JsonSerializable
 
 	public function jsonSerialize(): array
 	{
-		return [
+		$array = [
 			"currency" => $this->currency,
 			"total_amount" => $this->totalAmount,
 			"invoice_payload" => $this->invoicePayload,
-			"subscription_expiration_date" => $this->subscriptionExpirationDate,
 			"is_recurring" => $this->isRecurring,
 			"is_first_recurring" => $this->isFirstRecurring,
-			"shipping_option_id" => $this->shippingOptionId,
-			"order_info" => $this->orderInfo,
 			"telegram_payment_charge_id" => $this->telegramPaymentChargeId,
 			"provider_payment_charge_id" => $this->providerPaymentChargeId,
 		];
+
+		if (isset($this->subscriptionExpirationDate)) {
+			$array["subscription_expiration_date"] = $this->subscriptionExpirationDate;
+		}
+		if (isset($this->shippingOptionId)) {
+			$array["shipping_option_id"] = $this->shippingOptionId;
+		}
+		if (isset($this->orderInfo)) {
+			$array["order_info"] = $this->orderInfo->jsonSerialize();
+		}
+
+		return $array;
 	}
 
 	/**

@@ -5,9 +5,9 @@
  */
 class ChatBackground implements \JsonSerializable
 {
-	protected BackgroundType $type;
+	protected BackgroundTypeFill|BackgroundTypeWallpaper|BackgroundTypePattern|BackgroundTypeChatTheme $type;
 
-	public function __construct(BackgroundType $type)
+	public function __construct(BackgroundTypeFill|BackgroundTypeWallpaper|BackgroundTypePattern|BackgroundTypeChatTheme $type)
 	{
 		$this->type = $type;
 	}
@@ -17,7 +17,7 @@ class ChatBackground implements \JsonSerializable
 		return new static(BackgroundType::fromArray($array["type"]));
 	}
 
-	public function jsonSerialize()
+	public function jsonSerialize(): array
 	{
 		return [
 			"type" => $this->type->jsonSerialize()
@@ -25,9 +25,9 @@ class ChatBackground implements \JsonSerializable
 	}
 
 	/**
-	 * @return BackgroundType
+	 * @return BackgroundTypeFill|BackgroundTypeWallpaper|BackgroundTypePattern|BackgroundTypeChatTheme
 	 */
-	public function getType(): BackgroundType
+	public function getType(): BackgroundTypeFill|BackgroundTypeWallpaper|BackgroundTypePattern|BackgroundTypeChatTheme
 	{
 		return $this->type;
 	}

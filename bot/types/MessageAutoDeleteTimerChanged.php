@@ -17,7 +17,7 @@ class MessageAutoDeleteTimerChanged implements \JsonSerializable
 		return new static($array["message_auto_delete_time"]);
 	}
 
-	public function jsonSerialize()
+	public function jsonSerialize(): array
 	{
 		return [
 			"message_auto_delete_time" => $this->messageAutoDeleteTime,

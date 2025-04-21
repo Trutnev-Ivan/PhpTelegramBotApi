@@ -45,17 +45,22 @@ class KeyboardButtonRequestUsers implements \JsonSerializable
 		);
 	}
 
-	public function jsonSerialize()
+	public function jsonSerialize(): array
 	{
-		return [
+		$array = [
 			"request_id" => $this->requestId,
 			"user_is_bot" => $this->userIsBot,
 			"user_is_premium" => $this->userIsPremium,
-			"max_quantity" => $this->maxQuantity,
 			"request_name" => $this->requestName,
 			"request_username" => $this->requestUsername,
 			"request_photo" => $this->requestPhoto,
 		];
+
+		if (isset($this->maxQuantity)){
+			$array["max_quantity"] = $this->maxQuantity;
+		}
+
+		return $array;
 	}
 
 	/**

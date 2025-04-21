@@ -3,18 +3,16 @@
 /**
  * @see https://core.telegram.org/bots/api#maybeinaccessiblemessage
  */
-class MaybeInaccessibleMessage implements \JsonSerializable
+class MaybeInaccessibleMessage
 {
-
-	//TODO: заполнить после создания остальных классов
-
-	public static function fromArray(array $array): MaybeInaccessibleMessage
+	public static function fromArray(array $array):
+	Message
+	|InaccessibleMessage
 	{
+		if (isset($array["date"]) && $array["date"] == 0){
+			return InaccessibleMessage::fromArray($array);
+		}
 
-	}
-
-	public function jsonSerialize()
-	{
-		return [];
+		return Message::fromArray($array);
 	}
 }

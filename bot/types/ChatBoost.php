@@ -8,13 +8,17 @@ class ChatBoost implements \JsonSerializable
 	protected string $boostId;
 	protected int $addDate;
 	protected int $expirationDate;
-	protected ChatBoostSource $source;
+	protected ChatBoostSourcePremium
+	| ChatBoostSourceGiftCode
+	| ChatBoostSourceGiveaway $source;
 
 	public function __construct(
 		string $boostId = "",
 		int $addDate = 0,
 		int $expirationDate = 0,
-		ChatBoostSource $source = null
+		ChatBoostSourcePremium
+		| ChatBoostSourceGiftCode
+		| ChatBoostSourceGiveaway $source = null
 	)
 	{
 		$this->boostId = $boostId;
@@ -29,17 +33,17 @@ class ChatBoost implements \JsonSerializable
 			$array["boost_id"] ?? "",
 			$array["add_date"] ?? 0,
 			$array["expiration_date"] ?? 0,
-			$array["source"] ? ChatBoostSource::fromArray($array["source"]) : null
+			ChatBoostSource::fromArray($array["source"])
 		);
 	}
 
-	public function jsonSerialize()
+	public function jsonSerialize(): array
 	{
 		return [
 			"boost_id" => $this->boostId,
 			"add_date" => $this->addDate,
 			"expiration_date" => $this->expirationDate,
-			"source" => $this->source ? $this->source->jsonSerialize() : null,
+			"source" => $this->source->jsonSerialize(),
 		];
 	}
 
@@ -68,9 +72,13 @@ class ChatBoost implements \JsonSerializable
 	}
 
 	/**
-	 * @return ChatBoostSource
+	 * @return ChatBoostSourcePremium
+	 * | ChatBoostSourceGiftCode
+	 * | ChatBoostSourceGiveaway
 	 */
-	public function getSource(): ChatBoostSource
+	public function getSource(): ChatBoostSourcePremium
+	| ChatBoostSourceGiftCode
+	| ChatBoostSourceGiveaway
 	{
 		return $this->source;
 	}

@@ -3,18 +3,24 @@
 /**
  * @see https://core.telegram.org/bots/api#backgroundtype
  */
-class BackgroundType implements \JsonSerializable
+class BackgroundType
 {
-
-	//TODO: заполнить потом
-
-	public static function fromArray(array $array): BackgroundType
+	public static function fromArray(array $array): BackgroundTypeFill
+		|BackgroundTypeWallpaper
+		|BackgroundTypePattern
+		|BackgroundTypeChatTheme
 	{
-		
-	}
-
-	public function jsonSerialize()
-	{
-		// TODO: Implement jsonSerialize() method.
+		switch ($array["type"]){
+			case "fill":
+                return BackgroundTypeFill::fromArray($array);
+            case "wallpaper":
+                return BackgroundTypeWallpaper::fromArray($array);
+            case "pattern":
+                return BackgroundTypePattern::fromArray($array);
+            case "chat_theme":
+                return BackgroundTypeChatTheme::fromArray($array);
+            default:
+                throw new \InvalidArgumentException("Unknown background type: " . $array["type"]);
+		}
 	}
 }

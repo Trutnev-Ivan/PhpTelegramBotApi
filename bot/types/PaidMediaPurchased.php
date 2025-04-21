@@ -20,7 +20,7 @@ class PaidMediaPurchased implements \JsonSerializable
 	public static function fromArray(array $array): PaidMediaPurchased
 	{
 		return new static(
-			$array["from"] ? User::fromArray($array["from"]) : null,
+			User::fromArray($array["from"]),
 			$array["paid_media_payload"] ?? ""
 		);
 	}
@@ -28,7 +28,7 @@ class PaidMediaPurchased implements \JsonSerializable
 	public function jsonSerialize(): array
 	{
 		return [
-			"from" => $this->from ? $this->from->jsonSerialize() : null,
+			"from" => $this->from->jsonSerialize(),
 			"paid_media_payload" => $this->paidMediaPayload,
 		];
 	}

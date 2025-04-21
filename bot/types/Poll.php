@@ -100,9 +100,9 @@ class Poll implements \JsonSerializable
 		);
 	}
 
-	public function jsonSerialize()
+	public function jsonSerialize(): array
 	{
-		return [
+		$array = [
 			"id" => $this->id,
 			"question" => $this->question,
 			"question_entities" => $this->questionEntities ? array_map(fn($entity) => $entity->jsonSerialize(), $this->questionEntities) : [],
@@ -112,12 +112,23 @@ class Poll implements \JsonSerializable
 			"is_anonymous" => $this->isAnonymous,
 			"type" => $this->type,
 			"allows_multiple_answers" => $this->allowsMultipleAnswers,
-			"correct_option_id" => $this->correctOptionId,
-			"explanation" => $this->explanation,
 			"explanation_entities" => $this->explanationEntities ? array_map(fn($entity) => $entity->jsonSerialize(), $this->explanationEntities) : [],
-			"open_period" => $this->openPeriod,
-			"close_date" => $this->closeDate,
 		];
+
+		if (isset($this->correctOptionId)){
+			$array["correct_option_id"] = $this->correctOptionId;
+		}
+		if (isset($this->explanation)){
+			$array["explanation"] = $this->explanation;
+		}
+		if (isset($this->openPeriod)){
+			$array["open_period"] = $this->openPeriod;
+		}
+		if (isset($this->closeDate)){
+			$array["close_date"] = $this->closeDate;
+		}
+
+		return $array;
 	}
 
 	/**

@@ -7,7 +7,7 @@ class PaidMediaInfo implements \JsonSerializable
 {
 	protected int $starCount;
 	/**
-	 * @var PaidMedia[]
+	 * @var (PaidMediaPhoto|PaidMediaVideo|PaidMediaPreview)[]
 	 */
 	protected array $paidMedia;
 
@@ -20,8 +20,11 @@ class PaidMediaInfo implements \JsonSerializable
 		$this->paidMedia = $paidMedia;
 
 		foreach ($this->paidMedia as $paidMedia) {
-			if (!$paidMedia instanceof PaidMedia) {
-				throw new \InvalidArgumentException("All elements of 'paid_media' must be instances of " . PaidMedia::class);
+			if (!$paidMedia instanceof PaidMediaPhoto
+				&& !$paidMedia instanceof PaidMediaVideo
+				&& !$paidMedia instanceof PaidMediaPreview
+			) {
+				throw new \InvalidArgumentException("All elements of 'paid_media' must be instances of " . PaidMediaPhoto::class . " or " . PaidMediaVideo::class . " or " . PaidMediaPreview::class);
 			}
 		}
 	}
@@ -34,7 +37,7 @@ class PaidMediaInfo implements \JsonSerializable
 		);
 	}
 
-	public function jsonSerialize()
+	public function jsonSerialize(): array
 	{
 		return [
 			"star_count" => $this->starCount,

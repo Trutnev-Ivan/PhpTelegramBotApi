@@ -19,7 +19,7 @@ class BotName implements \JsonSerializable
 		return new static($array["name"]);
 	}
 
-	public function jsonSerialize()
+	public function jsonSerialize(): array
 	{
 		return [
 			"name" => $this->name,

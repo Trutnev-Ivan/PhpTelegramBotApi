@@ -33,14 +33,21 @@ class GiveawayCompleted implements \JsonSerializable
 		);
 	}
 
-	public function jsonSerialize()
+	public function jsonSerialize(): array
 	{
-		return [
+		$array = [
 			"winner_count" => $this->winnerCount,
-			"unclaimed_prize_count" => $this->unclaimedPrizeCount,
-			"giveaway_message" => $this->giveawayMessage ? $this->giveawayMessage->jsonSerialize() : null,
 			"is_star_giveaway" => $this->isStarGiveaway,
 		];
+
+		if (isset($this->unclaimedPrizeCount)){
+			$array["unclaimed_prize_count"] = $this->unclaimedPrizeCount;
+		}
+		if (isset($this->giveawayMessage)){
+			$array["giveaway_message"] = $this->giveawayMessage->jsonSerialize();
+		}
+
+		return $array;
 	}
 
 	/**

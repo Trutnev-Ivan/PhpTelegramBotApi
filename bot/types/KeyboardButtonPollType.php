@@ -21,11 +21,15 @@ class KeyboardButtonPollType implements \JsonSerializable
 		);
 	}
 
-	public function jsonSerialize()
+	public function jsonSerialize(): array
 	{
-		return [
-			"type" => $this->type,
-		];
+		$array = [];
+
+		if (isset($this->type)){
+			$array["type"] = $this->type;
+		}
+
+		return $array;
 	}
 
 	/**

@@ -24,7 +24,7 @@ class InputMediaVideo implements \JsonSerializable
 	protected bool $hasSpoiler;
 
 	public function __construct(
-		string $type = "",
+		string $type = "video",
 		string $media = "",
 		?string $thumbnail = null,
 		?string $cover = null,
@@ -55,6 +55,10 @@ class InputMediaVideo implements \JsonSerializable
 		$this->supportsStreaming = $supportsStreaming;
 		$this->hasSpoiler = $hasSpoiler;
 
+		if ($this->type != "video"){
+			throw new \InvalidArgumentException("Input media must be of type 'video', got {$this->type}");
+		}
+
 		foreach ($this->captionEntities as $entity) {
 			if (!($entity instanceof MessageEntity)) {
 				throw new \InvalidArgumentException("All caption entities must be instances of " . MessageEntity::class);
@@ -65,41 +69,60 @@ class InputMediaVideo implements \JsonSerializable
 	public static function fromArray(array $array): InputMediaVideo
 	{
 		return new static(
-            $array["type"]?? "",
-            $array["media"]?? "",
-            $array["thumbnail"]?? null,
-            $array["cover"]?? null,
-            $array["start_timestamp"]?? null,
-            $array["caption"]?? null,
-            $array["parse_mode"]?? null,
-            $array["caption_entities"]? array_map(fn($entity) => MessageEntity::fromArray($entity), $array["caption_entities"]) : [],
-            $array["show_caption_above_media"]?? false,
-            $array["width"]?? null,
-            $array["height"]?? null,
-            $array["duration"]?? null,
-            $array["supports_streaming"]?? false,
-            $array["has_spoiler"]?? false
-        );
+			$array["type"] ?? "video",
+			$array["media"] ?? "",
+			$array["thumbnail"],
+			$array["cover"],
+			$array["start_timestamp"],
+			$array["caption"],
+			$array["parse_mode"],
+			$array["caption_entities"] ? array_map(fn($entity) => MessageEntity::fromArray($entity), $array["caption_entities"]) : [],
+			$array["show_caption_above_media"] ?? false,
+			$array["width"],
+			$array["height"],
+			$array["duration"],
+			$array["supports_streaming"] ?? false,
+			$array["has_spoiler"] ?? false
+		);
 	}
-	
-	public function jsonSerialize()
+
+	public function jsonSerialize(): array
 	{
-		return [
+		$array = [
 			"type" => $this->type,
 			"media" => $this->media,
-			"thumbnail" => $this->thumbnail,
-			"cover" => $this->cover,
-			"start_timestamp" => $this->startTimestamp,
-			"caption" => $this->caption,
-			"parse_mode" => $this->parseMode,
 			"caption_entities" => $this->captionEntities ? array_map(fn($entity) => $entity->jsonSerialize(), $this->captionEntities) : [],
 			"show_caption_above_media" => $this->showCaptionAboveMedia,
-			"width" => $this->width,
-			"height" => $this->height,
-			"duration" => $this->duration,
 			"supports_streaming" => $this->supportsStreaming,
 			"has_spoiler" => $this->hasSpoiler,
 		];
+
+		if (isset($this->thumbnail)) {
+			$array["thumbnail"] = $this->thumbnail;
+		}
+		if (isset($this->cover)) {
+			$array["cover"] = $this->cover;
+		}
+		if (isset($this->startTimestamp)) {
+			$array["start_timestamp"] = $this->startTimestamp;
+		}
+		if (isset($this->caption)) {
+			$array["caption"] = $this->caption;
+		}
+		if (isset($this->parseMode)) {
+			$array["parse_mode"] = $this->parseMode;
+		}
+		if (isset($this->width)) {
+			$array["width"] = $this->width;
+		}
+		if (isset($this->height)) {
+			$array["height"] = $this->height;
+		}
+		if (isset($this->duration)) {
+			$array["duration"] = $this->duration;
+		}
+
+		return $array;
 	}
 
 	/**

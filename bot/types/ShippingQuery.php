@@ -27,9 +27,9 @@ class ShippingQuery implements \JsonSerializable
 	{
 		return new static(
 			$array["id"] ?? "",
-			$array["from"] ? User::fromArray($array["from"]) : null,
+			User::fromArray($array["from"]),
 			$array["invoice_payload"] ?? "",
-			$array["shipping_address"] ? ShippingAddress::fromArray($array["shipping_address"]) : null
+			ShippingAddress::fromArray($array["shipping_address"])
 		);
 	}
 
@@ -37,9 +37,9 @@ class ShippingQuery implements \JsonSerializable
 	{
 		return [
 			"id" => $this->id,
-			"from" => $this->from ? $this->from->jsonSerialize() : null,
+			"from" => $this->from->jsonSerialize(),
 			"invoice_payload" => $this->invoicePayload,
-			"shipping_address" => $this->shippingAddress ? $this->shippingAddress->jsonSerialize() : null,
+			"shipping_address" => $this->shippingAddress->jsonSerialize(),
 		];
 	}
 

@@ -3,19 +3,21 @@
 /**
  * @see https://core.telegram.org/bots/api#messageorigin
  */
-class MessageOrigin implements \JsonSerializable
+class MessageOrigin
 {
-	//TODO: заполнить после создания остальных классов
-
-	public static function fromArray(array $array): MessageOrigin
+	public static function fromArray(array $array): MessageOriginUser|MessageOriginHiddenUser|MessageOriginChat|MessageOriginChannel
 	{
-		return new static();
-	}
-
-	public function jsonSerialize()
-	{
-		return [
-
-		];
+		switch ($array["type"]) {
+			case "user":
+				return MessageOriginUser::fromArray($array);
+			case "hidden_user":
+				return MessageOriginHiddenUser::fromArray($array);
+			case "chat":
+				return MessageOriginChat::fromArray($array);
+			case "channel":
+				return MessageOriginChannel::fromArray($array);
+			default:
+				throw new \InvalidArgumentException("Unknown message origin type: " . $array["type"]);
+		}
 	}
 }

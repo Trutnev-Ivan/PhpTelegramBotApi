@@ -10,26 +10,30 @@ class MessageOriginHiddenUser implements \JsonSerializable
 	protected string $senderUserName;
 
 	public function __construct(
-		string $type,
-		int $date,
-		string $senderUserName
+		string $type = "hidden_user",
+		int $date = 0,
+		string $senderUserName = ""
 	)
 	{
 		$this->type = $type;
 		$this->date = $date;
 		$this->senderUserName = $senderUserName;
+
+		if ($this->type != "hidden_user"){
+			throw new \InvalidArgumentException("Invalid type for MessageOriginHiddenUser. Must be 'hidden_user', gpt {$this->type}");
+		}
 	}
 
 	public static function fromArray(array $array): MessageOriginHiddenUser
 	{
 		return new static(
-			$array["type"] ?? "",
+			$array["type"] ?? "hidden_user",
 			$array["date"] ?? 0,
 			$array["sender_user_name"] ?? ""
 		);
 	}
 
-	public function jsonSerialize()
+	public function jsonSerialize(): array
 	{
 		return [
 			"type" => $this->type,

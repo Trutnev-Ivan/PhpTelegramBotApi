@@ -8,8 +8,8 @@ class ChatMemberUpdated implements \JsonSerializable
 	protected Chat $chat;
 	protected User $from;
 	protected int $date;
-	protected ChatMember $oldChatMember;
-	protected ChatMember $newChatMember;
+	protected ChatMemberOwner|ChatMemberAdministrator|ChatMemberMember|ChatMemberRestricted|ChatMemberLeft|ChatMemberBanned $oldChatMember;
+	protected ChatMemberOwner|ChatMemberAdministrator|ChatMemberMember|ChatMemberRestricted|ChatMemberLeft|ChatMemberBanned $newChatMember;
 	protected ?ChatInviteLink $inviteLink;
 	protected bool $viaJoinRequest;
 	protected bool $viaChatFolderInviteLink;
@@ -18,8 +18,8 @@ class ChatMemberUpdated implements \JsonSerializable
 		Chat $chat = null,
 		User $from = null,
 		int $date = 0,
-		ChatMember $oldChatMember = null,
-		ChatMember $newChatMember = null,
+		ChatMemberOwner|ChatMemberAdministrator|ChatMemberMember|ChatMemberRestricted|ChatMemberLeft|ChatMemberBanned $oldChatMember = null,
+		ChatMemberOwner|ChatMemberAdministrator|ChatMemberMember|ChatMemberRestricted|ChatMemberLeft|ChatMemberBanned $newChatMember = null,
 		?ChatInviteLink $inviteLink = null,
 		bool $viaJoinRequest = false,
 		bool $viaChatFolderInviteLink = false
@@ -38,29 +38,34 @@ class ChatMemberUpdated implements \JsonSerializable
 	public static function fromArray(array $array): ChatMemberUpdated
 	{
 		return new static(
-			$array["chat"] ? Chat::fromArray($array["chat"]) : null,
-			$array["from"] ? User::fromArray($array["from"]) : null,
+			Chat::fromArray($array["chat"]),
+			User::fromArray($array["from"]),
 			$array["date"] ?? 0,
-			$array["old_chat_member"] ? ChatMember::fromArray($array["old_chat_member"]) : null,
-			$array["new_chat_member"] ? ChatMember::fromArray($array["new_chat_member"]) : null,
+			ChatMember::fromArray($array["old_chat_member"]),
+			ChatMember::fromArray($array["new_chat_member"]),
 			$array["invite_link"] ? ChatInviteLink::fromArray($array["invite_link"]) : null,
 			$array["via_join_request"] ?? false,
 			$array["via_chat_folder_invite_link"] ?? false
 		);
 	}
 
-	public function jsonSerialize()
+	public function jsonSerialize(): array
 	{
-		return [
-			"chat" => $this->chat ? $this->chat->jsonSerialize() : null,
-			"from" => $this->from ? $this->from->jsonSerialize() : null,
+		$array = [
+			"chat" => $this->chat->jsonSerialize(),
+			"from" => $this->from->jsonSerialize(),
 			"date" => $this->date,
-			"old_chat_member" => $this->oldChatMember ? $this->oldChatMember->jsonSerialize() : null,
-			"new_chat_member" => $this->newChatMember ? $this->newChatMember->jsonSerialize() : null,
-			"invite_link" => $this->inviteLink ? $this->inviteLink->jsonSerialize() : null,
+			"old_chat_member" => $this->oldChatMember->jsonSerialize(),
+			"new_chat_member" => $this->newChatMember->jsonSerialize(),
 			"via_join_request" => $this->viaJoinRequest,
 			"via_chat_folder_invite_link" => $this->viaChatFolderInviteLink,
 		];
+
+		if ($this->inviteLink){
+			$array["invite_link"] = $this->inviteLink->jsonSerialize();
+		}
+
+		return $array;
 	}
 
 	/**
@@ -88,17 +93,17 @@ class ChatMemberUpdated implements \JsonSerializable
 	}
 
 	/**
-	 * @return ChatMember
+	 * @return ChatMemberOwner|ChatMemberAdministrator|ChatMemberMember|ChatMemberRestricted|ChatMemberLeft|ChatMemberBanned
 	 */
-	public function getOldChatMember(): ChatMember
+	public function getOldChatMember(): ChatMemberOwner|ChatMemberAdministrator|ChatMemberMember|ChatMemberRestricted|ChatMemberLeft|ChatMemberBanned
 	{
 		return $this->oldChatMember;
 	}
 
 	/**
-	 * @return ChatMember
+	 * @return ChatMemberOwner|ChatMemberAdministrator|ChatMemberMember|ChatMemberRestricted|ChatMemberLeft|ChatMemberBanned
 	 */
-	public function getNewChatMember(): ChatMember
+	public function getNewChatMember(): ChatMemberOwner|ChatMemberAdministrator|ChatMemberMember|ChatMemberRestricted|ChatMemberLeft|ChatMemberBanned
 	{
 		return $this->newChatMember;
 	}

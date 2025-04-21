@@ -25,12 +25,18 @@ class ResponseParameters implements \JsonSerializable
 		);
 	}
 
-	public function jsonSerialize()
+	public function jsonSerialize(): array
 	{
-		return [
-			"migrate_to_chat_id" => $this->migrateToChatId,
-			"retry_after" => $this->retryAfter,
-		];
+		$array = [];
+
+		if (isset($this->migrateToChatId)){
+			$array["migrate_to_chat_id"] = $this->migrateToChatId;
+		}
+		if (isset($this->retryAfter)){
+			$array["retry_after"] = $this->retryAfter;
+		}
+
+		return $array;
 	}
 
 	/**

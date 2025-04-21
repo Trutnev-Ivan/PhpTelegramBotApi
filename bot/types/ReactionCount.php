@@ -20,15 +20,15 @@ class ReactionCount implements \JsonSerializable
 	public static function fromArray(array $array): ReactionCount
 	{
 		return new static(
-			$array["type"] ? ReactionType::fromArray($array["type"]) : null,
+			ReactionType::fromArray($array["type"]),
 			$array["total_count"] ?? 0,
 		);
 	}
 
-	public function jsonSerialize()
+	public function jsonSerialize(): array
 	{
 		return [
-			"type" => $this->type ? $this->type->jsonSerialize() : null,
+			"type" => $this->type->jsonSerialize(),
 			"total_count" => $this->totalCount,
 		];
 	}

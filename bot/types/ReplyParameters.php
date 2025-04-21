@@ -41,7 +41,7 @@ class ReplyParameters implements \JsonSerializable
 		}
 	}
 
-	public static function fromArray(array $array)
+	public static function fromArray(array $array): ReplyParameters
 	{
 		return new static(
 			$array["message_id"] ?? null,
@@ -54,17 +54,28 @@ class ReplyParameters implements \JsonSerializable
 		);
 	}
 
-	public function jsonSerialize()
+	public function jsonSerialize(): array
 	{
-		return [
+		$array = [
 			"message_id" => $this->messageId,
-			"chat_id" => $this->chatId,
 			"allow_sending_without_reply" => $this->allowSendingWithoutReply,
-			"quote" => $this->quote,
-			"quote_parse_mode" => $this->quoteParseMode,
 			"quote_entities" => $this->quoteEntities ? array_map(fn ($entity) => $entity->jsonSerialize(), $this->quoteEntities) : [],
-			"quote_position" => $this->quotePosition,
 		];
+
+		if (isset($this->chatId)){
+			$array["chat_id"] = $this->chatId;
+		}
+		if (isset($this->quote)){
+			$array["quote"] = $this->quote;
+		}
+		if (isset($this->quoteParseMode)){
+			$array["quote_parse_mode"] = $this->quoteParseMode;
+		}
+		if (isset($this->quotePosition)){
+			$array["quote_position"] = $this->quotePosition;
+		}
+
+		return $array;
 	}
 
 	/**

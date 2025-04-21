@@ -29,13 +29,18 @@ class WriteAccessAllowed implements \JsonSerializable
 		);
 	}
 
-	public function jsonSerialize()
+	public function jsonSerialize(): array
 	{
-		return [
+		$array = [
 			"from_request" => $this->fromRequest,
-			"web_app_name" => $this->webAppName,
 			"from_attachment_menu" => $this->fromAttachmentMenu,
 		];
+
+		if (isset($this->webAppName)){
+			$array["web_app_name"] = $this->webAppName;
+		}
+
+		return $array;
 	}
 
 	/**

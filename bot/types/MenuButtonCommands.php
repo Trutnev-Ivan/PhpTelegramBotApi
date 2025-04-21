@@ -5,10 +5,10 @@
  */
 class MenuButtonCommands implements \JsonSerializable
 {
-	protected string $type = "";
+	protected string $type = "commands";
 
 	public function __construct(
-		string $type = ""
+		string $type = "commands"
 	)
 	{
 		$this->type = $type;
@@ -19,7 +19,7 @@ class MenuButtonCommands implements \JsonSerializable
 		return new static($array["type"] ?? "");
 	}
 
-	public function jsonSerialize()
+	public function jsonSerialize(): array
 	{
 		return [
 			"type" => $this->type,

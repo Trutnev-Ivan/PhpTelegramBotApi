@@ -12,6 +12,9 @@ class InlineKeyboardButton implements \JsonSerializable
 	protected ?LoginUrl $loginUrl;
 	protected ?string $switchInlineQuery;
 	protected ?string $switchInlineQueryCurrentChat;
+	protected ?SwitchInlineQueryChosenChat $switchInlineQueryChosenChat;
+	protected ?CopyTextButton $copyText;
+	protected ?CallbackGame $callbackGame;
 
 	public function __construct(
 		string $text = "",
@@ -20,7 +23,10 @@ class InlineKeyboardButton implements \JsonSerializable
 		?WebAppInfo $webApp = null,
 		?LoginUrl $loginUrl = null,
 		?string $switchInlineQuery = null,
-		?string $switchInlineQueryCurrentChat = null
+		?string $switchInlineQueryCurrentChat = null,
+		?SwitchInlineQueryChosenChat $switchInlineQueryChosenChat = null,
+		?CopyTextButton $copyText = null,
+		?CallbackGame $callbackGame = null
 	)
 	{
 		$this->text = $text;
@@ -30,6 +36,9 @@ class InlineKeyboardButton implements \JsonSerializable
 		$this->loginUrl = $loginUrl;
 		$this->switchInlineQuery = $switchInlineQuery;
 		$this->switchInlineQueryCurrentChat = $switchInlineQueryCurrentChat;
+		$this->switchInlineQueryChosenChat = $switchInlineQueryChosenChat;
+		$this->copyText = $copyText;
+		$this->callbackGame = $callbackGame;
 	}
 
 	public static function fromArray(array $array): InlineKeyboardButton
@@ -42,20 +51,44 @@ class InlineKeyboardButton implements \JsonSerializable
 			$array["login_url"] ? LoginUrl::fromArray($array["login_url"]) : null,
 			$array["switch_inline_query"],
 			$array["switch_inline_query_current_chat"],
+			$array["switch_inline_query_chosen_chat"] ? SwitchInlineQueryChosenChat::fromArray($array["switch_inline_query_chosen_chat"]) : null,
+			$array["copy_text"] ? CopyTextButton::fromArray($array["copy_text"]) : null,
+			$array["callback_game"] ? new CallbackGame : null
 		);
 	}
 
-	public function jsonSerialize()
+	public function jsonSerialize(): array
 	{
-		return [
+		$array = [
 			"text" => $this->text,
-			"url" => $this->url,
-			"callback_data" => $this->callbackData,
-			"web_app" => $this->webApp ? $this->webApp->jsonSerialize() : null,
-			"login_url" => $this->loginUrl ? $this->loginUrl->jsonSerialize() : null,
-			"switch_inline_query" => $this->switchInlineQuery,
-			"switch_inline_query_current_chat" => $this->switchInlineQueryCurrentChat,
 		];
+
+		if (isset($this->url)) {
+			$array["url"] = $this->url;
+		}
+		if (isset($this->callbackData)) {
+			$array["callback_data"] = $this->callbackData;
+		}
+		if (isset($this->webApp)) {
+			$array["web_app"] = $this->webApp->jsonSerialize();
+		}
+		if (isset($this->loginUrl)) {
+			$array["login_url"] = $this->loginUrl->jsonSerialize();
+		}
+		if (isset($this->switchInlineQuery)) {
+			$array["switch_inline_query"] = $this->switchInlineQuery;
+		}
+		if (isset($this->switchInlineQueryCurrentChat)) {
+			$array["switch_inline_query_current_chat"] = $this->switchInlineQueryCurrentChat;
+		}
+		if (isset($this->switchInlineQueryChosenChat)){
+			$array["switch_inline_query_chosen_chat"] = $this->switchInlineQueryChosenChat->jsonSerialize();
+		}
+		if (isset($this->copyText)){
+			$array["copy_text"] = $this->copyText->jsonSerialize();
+		}
+
+		return $array;
 	}
 
 	/**
@@ -112,5 +145,29 @@ class InlineKeyboardButton implements \JsonSerializable
 	public function getSwitchInlineQueryCurrentChat(): ?string
 	{
 		return $this->switchInlineQueryCurrentChat;
+	}
+
+	/**
+	 * @return SwitchInlineQueryChosenChat|null
+	 */
+	public function getSwitchInlineQueryChosenChat(): ?SwitchInlineQueryChosenChat
+	{
+		return $this->switchInlineQueryChosenChat;
+	}
+
+	/**
+	 * @return CopyTextButton|null
+	 */
+	public function getCopyText(): ?CopyTextButton
+	{
+		return $this->copyText;
+	}
+
+	/**
+	 * @return CallbackGame|null
+	 */
+	public function getCallbackGame(): ?CallbackGame
+	{
+		return $this->callbackGame;
 	}
 }

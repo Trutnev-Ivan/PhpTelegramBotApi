@@ -36,20 +36,27 @@ class PollAnswer implements \JsonSerializable
 	{
 		return new static(
 			$array["poll_id"] ?? "",
-			$array["voter_chat"] ? Chat::fromArray($array["voter_chat"]) :  null,
+			$array["voter_chat"] ? Chat::fromArray($array["voter_chat"]) : null,
 			$array["user"] ? User::fromArray($array["user"]) : null,
 			$array["option_ids"] ?? []
 		);
 	}
 
-	public function jsonSerialize()
+	public function jsonSerialize(): array
 	{
-		return [
+		$array = [
 			"poll_id" => $this->pollId,
-			"voter_chat" => $this->voterChat ? $this->voterChat->jsonSerialize() : null,
-			"user" => $this->user ? $this->user->jsonSerialize() : null,
 			"option_ids" => $this->optionIds,
 		];
+
+		if (isset($this->voterChat)) {
+			$array["voter_chat"] = $this->voterChat->jsonSerialize();
+		}
+		if (isset($this->user)) {
+			$array["user"] = $this->user->jsonSerialize();
+		}
+
+		return $array;
 	}
 
 	/**

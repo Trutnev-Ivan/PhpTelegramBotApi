@@ -30,7 +30,7 @@ class VideoChatParticipantsInvited implements \JsonSerializable
 		);
 	}
 
-	public function jsonSerialize()
+	public function jsonSerialize(): array
 	{
 		return [
 			"users" => $this->users ? array_map(fn($user) => $user->jsonSerialize(), $this->users) : [],

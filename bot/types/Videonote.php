@@ -37,20 +37,27 @@ class VideoNote implements \JsonSerializable
 			$array["length"] ?? 0,
 			$array["duration"] ?? 0,
 			$array["thumbnail"] ? PhotoSize::fromArray($array["thumbnail"]) : null,
-			$array["file_size"] 
+			$array["file_size"]
 		);
 	}
 
-	public function jsonSerialize()
+	public function jsonSerialize(): array
 	{
-		return [
+		$array = [
 			"file_id" => $this->fileId,
 			"file_unique_id" => $this->fileUniqueId,
 			"length" => $this->length,
 			"duration" => $this->duration,
-			"thumbnail" => $this->thumbnail ? $this->thumbnail->jsonSerialize() : null,
-			"file_size" => $this->fileSize,
 		];
+
+		if (isset($this->thumbnail)) {
+			$array["thumbnail"] = $this->thumbnail->jsonSerialize();
+		}
+		if (isset($this->fileSize)) {
+			$array["file_size"] = $this->fileSize;
+		}
+
+		return $array;
 	}
 
 	/**

@@ -77,7 +77,7 @@ class ChatAdministratorRights implements \JsonSerializable
 		);
 	}
 
-	public function jsonSerialize()
+	public function jsonSerialize(): array
 	{
 		return [
 			"is_anonymous" => $this->isAnonymous,

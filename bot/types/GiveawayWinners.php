@@ -74,22 +74,35 @@ class GiveawayWinners implements \JsonSerializable
 		);
 	}
 
-	public function jsonSerialize()
+	public function jsonSerialize(): array
 	{
-		return [
+		$array = [
 			"chat" => $this->chat->jsonSerialize(),
 			"giveaway_message_id" => $this->giveawayMessageId,
 			"winners_selection_date" => $this->winnersSelectionDate,
 			"winner_count" => $this->winnerCount,
 			"winners" => $this->winners ? array_map(fn($winner) => $winner->jsonSerialize(), $this->winners) : [],
-			"additional_chat_count" => $this->additionalChatCount,
-			"prize_star_count" => $this->prizeStarCount,
-			"premium_subscription_month_count" => $this->premiumSubscriptionMonthCount,
-			"unclaimed_prize_count" => $this->unclaimedPrizeCount,
 			"only_new_members" => $this->onlyNewMembers,
 			"was_refunded" => $this->wasRefunded,
-			"prize_description" => $this->prizeDescription,
 		];
+
+		if (isset($this->additionalChatCount)) {
+			$array["additional_chat_count"] = $this->additionalChatCount;
+		}
+		if (isset($this->prizeStarCount)) {
+			$array["prize_star_count"] = $this->prizeStarCount;
+		}
+		if (isset($this->premiumSubscriptionMonthCount)) {
+			$array["premium_subscription_month_count"] = $this->premiumSubscriptionMonthCount;
+		}
+		if (isset($this->unclaimedPrizeCount)) {
+			$array["unclaimed_prize_count"] = $this->unclaimedPrizeCount;
+		}
+		if (isset($this->prizeDescription)) {
+			$array["prize_description"] = $this->prizeDescription;
+		}
+
+		return $array;
 	}
 
 	/**

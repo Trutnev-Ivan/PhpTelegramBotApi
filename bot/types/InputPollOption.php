@@ -38,13 +38,18 @@ class InputPollOption implements \JsonSerializable
 		);
 	}
 
-	public function jsonSerialize()
+	public function jsonSerialize(): array
 	{
-		return [
+		$array = [
 			"text" => $this->text,
-			"text_parse_mode" => $this->textParseMode,
 			"text_entities" => $this->textEntities ? array_map(fn($entity) => $entity->jsonSerialize(), $this->textEntities) : [],
 		];
+
+		if (isset($this->textParseMode)) {
+			$array["text_parse_mode"] = $this->textParseMode;
+		}
+
+		return $array;
 	}
 
 	/**

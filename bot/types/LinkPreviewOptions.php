@@ -37,14 +37,59 @@ class LinkPreviewOptions implements \JsonSerializable
 		);
 	}
 
-	public function jsonSerialize()
+	public function jsonSerialize(): array
 	{
-		return [
+		$array = [
 			"is_disabled" => $this->isDisabled,
-			"url" => $this->url,
 			"prefer_small_media" => $this->preferSmallMedia,
 			"prefer_large_media" => $this->preferLargeMedia,
 			"show_above_text" => $this->showAboveText,
 		];
+
+		if (isset($this->url)) {
+			$array["url"] = $this->url;
+		}
+
+		return $array;
+	}
+
+	/**
+	 * @return bool
+	 */
+	public function isDisabled(): bool
+	{
+		return $this->isDisabled;
+	}
+
+	/**
+	 * @return string|null
+	 */
+	public function getUrl(): ?string
+	{
+		return $this->url;
+	}
+
+	/**
+	 * @return bool
+	 */
+	public function isPreferSmallMedia(): bool
+	{
+		return $this->preferSmallMedia;
+	}
+
+	/**
+	 * @return bool
+	 */
+	public function isPreferLargeMedia(): bool
+	{
+		return $this->preferLargeMedia;
+	}
+
+	/**
+	 * @return bool
+	 */
+	public function isShowAboveText(): bool
+	{
+		return $this->showAboveText;
 	}
 }

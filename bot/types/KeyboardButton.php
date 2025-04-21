@@ -45,17 +45,28 @@ class KeyboardButton implements \JsonSerializable
 		);
 	}
 
-	public function jsonSerialize()
+	public function jsonSerialize(): array
 	{
-		return [
+		$array = [
 			"text" => $this->text,
-			"request_users" => $this->requestUsers ? $this->requestUsers->jsonSerialize() : null,
-			"request_chat" => $this->requestChat ? $this->requestChat->jsonSerialize() : null,
 			"request_contact" => $this->requestContact,
 			"request_location" => $this->requestLocation,
-			"request_poll" => $this->requestPoll ? $this->requestPoll->jsonSerialize() : null,
-			"web_app" => $this->webApp ? $this->webApp->jsonSerialize() : null,
 		];
+
+		if (isset($this->requestUsers)) {
+			$array["request_users"] = $this->requestUsers->jsonSerialize();
+		}
+		if (isset($this->requestChat)) {
+			$array["request_chat"] = $this->requestChat->jsonSerialize();
+		}
+		if (isset($this->requestPoll)) {
+			$array["request_poll"] = $this->requestPoll->jsonSerialize();
+		}
+		if (isset($this->webApp)) {
+			$array["web_app"] = $this->webApp->jsonSerialize();
+		}
+
+		return $array;
 	}
 
 	/**

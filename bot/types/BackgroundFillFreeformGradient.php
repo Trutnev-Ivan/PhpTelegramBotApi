@@ -12,12 +12,16 @@ class BackgroundFillFreeformGradient implements \JsonSerializable
 	protected array $colors;
 
 	public function __construct(
-		string $type,
+		string $type = "freeform_gradient",
 		array $colors = []
 	)
 	{
 		$this->type = $type;
 		$this->colors = $colors;
+
+		if ($this->type != "freeform_gradient") {
+			throw new \InvalidArgumentException("Invalid background fill type. Only 'freeform_gradient' is allowed.");
+		}
 
 		foreach ($this->colors as $color) {
 			if (!is_int($color)) {
@@ -26,7 +30,15 @@ class BackgroundFillFreeformGradient implements \JsonSerializable
 		}
 	}
 
-	public function jsonSerialize()
+	public static function fromArray(array $array): BackgroundFillFreeformGradient
+	{
+		return new static(
+			$array["type"] ?? "freeform_gradient",
+			$array["colors"] ?? []
+		);
+	}
+
+	public function jsonSerialize(): array
 	{
 		return [
 			"type" => $this->type,

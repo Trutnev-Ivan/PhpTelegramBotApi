@@ -17,7 +17,7 @@ class ChatBoostAdded implements \JsonSerializable
 		return new static($array["boost_count"]);
 	}
 
-	public function jsonSerialize()
+	public function jsonSerialize(): array
 	{
 		return [
 			"boost_count" => $this->boostCount

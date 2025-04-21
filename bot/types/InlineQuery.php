@@ -33,7 +33,7 @@ class InlineQuery implements \JsonSerializable
 	{
 		return new static(
 			$array["id"] ?? "",
-			$array["from"] ? User::fromArray($array["from"]) : null,
+			User::fromArray($array["from"]),
 			$array["query"] ?? "",
 			$array["offset"] ?? "",
 			$array["chat_type"],
@@ -41,16 +41,23 @@ class InlineQuery implements \JsonSerializable
 		);
 	}
 
-	public function jsonSerialize(): mixed
+	public function jsonSerialize(): array
 	{
-		return [
+		$array = [
 			"id" => $this->id,
 			"from" => $this->from ? $this->from->jsonSerialize() : null,
 			"query" => $this->query,
 			"offset" => $this->offset,
-			"chat_type" => $this->chatType,
-			"location" => $this->location ? $this->location->jsonSerialize() : null,
 		];
+
+		if (isset($this->chatType)) {
+			$array["chat_type"] = $this->chatType;
+		}
+		if (isset($this->location)) {
+			$array["location"] = $this->location->jsonSerialize();
+		}
+
+		return $array;
 	}
 
 	/**

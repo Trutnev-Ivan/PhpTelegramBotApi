@@ -45,17 +45,28 @@ class Venue implements \JsonSerializable
 		);
 	}
 
-	public function jsonSerialize()
+	public function jsonSerialize(): array
 	{
-		return [
-			"location" => $this->location ? $this->location->jsonSerialize() : null,
+		$array = [
+			"location" => $this->location->jsonSerialize(),
 			"title" => $this->title,
 			"address" => $this->address,
-			"foursquare_id" => $this->foursquareId,
-			"foursquare_type" => $this->foursquareType,
-			"google_place_id" => $this->googlePlaceId,
-			"google_place_type" => $this->googlePlaceType,
 		];
+
+		if (isset($this->foursquareId)) {
+			$array["foursquare_id"] = $this->foursquareId;
+		}
+		if (isset($this->foursquareType)) {
+			$array["foursquare_type"] = $this->foursquareType;
+		}
+		if (isset($this->googlePlaceId)) {
+			$array["google_place_id"] = $this->googlePlaceId;
+		}
+		if (isset($this->googlePlaceType)) {
+			$array["google_place_type"] = $this->googlePlaceType;
+		}
+
+		return $array;
 	}
 
 	/**

@@ -37,15 +37,20 @@ class PhotoSize implements \JsonSerializable
 		);
 	}
 
-	public function jsonSerialize()
+	public function jsonSerialize(): array
 	{
-		return [
+		$array = [
 			"file_id" => $this->fileId,
 			"file_unique_id" => $this->fileUniqueId,
 			"width" => $this->width,
 			"height" => $this->height,
-			"file_size" => $this->fileSize,
 		];
+
+		if (isset($this->fileSize)){
+			$array["file_size"] = $this->fileSize;
+		}
+
+		return $array;
 	}
 
 	/**

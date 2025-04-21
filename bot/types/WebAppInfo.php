@@ -17,7 +17,7 @@ class WebAppInfo implements \JsonSerializable
 		return new static($array["url"]);
 	}
 
-	public function jsonSerialize()
+	public function jsonSerialize(): array
 	{
 		return [
 			"url" => $this->url

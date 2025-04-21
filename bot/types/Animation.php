@@ -41,31 +41,40 @@ class Animation implements \JsonSerializable
 	public static function fromArray(array $array): Animation
 	{
 		return new static(
-			$array["file_id"] ?? "",
-			$array["file_unique_id"] ?? "",
-			$array["width"] ?? 0,
-			$array["height"] ?? 0,
-			$array["duration"] ?? 0,
-			$array["thumbnail"] ? PhotoSize::fromArray($array["thumbnail"]) : null,
-			$array["file_name"] ?? null,
-			$array["mime_type"] ?? null,
-			$array["file_size"] ?? null
+			$array["file_id"],
+			$array["file_unique_id"],
+			$array["width"],
+			$array["height"],
+			$array["duration"],
+			PhotoSize::fromArray($array["thumbnail"]),
+			$array["file_name"],
+			$array["mime_type"],
+			$array["file_size"]
 		);
 	}
 
-	public function jsonSerialize()
+	public function jsonSerialize(): array
 	{
-		return [
+		$array = [
 			"file_id" => $this->fileId,
 			"file_unique_id" => $this->fileUniqueId,
 			"width" => $this->width,
 			"height" => $this->height,
 			"duration" => $this->duration,
-			"thumbnail" => $this->thumbnail ? $this->thumbnail->jsonSerialize() : null,
-			"file_name" => $this->fileName,
-			"mime_type" => $this->mimeType,
-			"file_size" => $this->fileSize,
+			"thumbnail" => $this->thumbnail->jsonSerialize(),
 		];
+
+		if (isset($this->fileName)) {
+			$array["file_name"] = $this->fileName;
+		}
+		if (isset($this->mimeType)) {
+			$array["mime_type"] = $this->mimeType;
+		}
+		if (isset($this->fileSize)) {
+			$array["file_size"] = $this->fileSize;
+		}
+
+		return $array;
 	}
 
 	/**

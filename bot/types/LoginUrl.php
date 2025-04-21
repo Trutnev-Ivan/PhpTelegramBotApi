@@ -33,14 +33,21 @@ class LoginUrl implements \JsonSerializable
 		);
 	}
 
-	public function jsonSerialize()
+	public function jsonSerialize(): array
 	{
-		return [
+		$array = [
 			"url" => $this->url,
-			"forward_text" => $this->forwardText,
-			"bot_username" => $this->botUsername,
 			"request_write_access" => $this->requestWriteAccess,
 		];
+
+		if (isset($this->forwardText)) {
+			$array["forward_text"] = $this->forwardText;
+		}
+		if (isset($this->botUsername)) {
+			$array["bot_username"] = $this->botUsername;
+		}
+
+		return $array;
 	}
 
 	/**

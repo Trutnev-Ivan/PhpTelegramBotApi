@@ -8,7 +8,7 @@ class ForumTopic implements \JsonSerializable
 	protected int $messageThreadId;
 	protected string $name;
 	protected int $iconColor;
-	protected string $iconCustomEmojiId;
+	protected ?string $iconCustomEmojiId;
 
 	public function __construct(
 		int $messageThreadId = 0,
@@ -33,14 +33,19 @@ class ForumTopic implements \JsonSerializable
 		);
 	}
 
-	public function jsonSerialize()
+	public function jsonSerialize(): array
 	{
-		return [
+		$array = [
 			"message_thread_id" => $this->messageThreadId,
 			"name" => $this->name,
 			"icon_color" => $this->iconColor,
-			"icon_custom_emoji_id" => $this->iconCustomEmojiId,
 		];
+
+		if (isset($this->iconCustomEmojiId)){
+			$array["icon_custom_emoji_id"] = $this->iconCustomEmojiId;
+		}
+
+		return $array;
 	}
 
 	/**

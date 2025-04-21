@@ -10,7 +10,7 @@ class MenuButtonWebApp implements \JsonSerializable
 	protected WebAppInfo $webApp;
 
 	public function __construct(
-		string $type = "",
+		string $type = "web_app",
 		string $text = "",
 		WebAppInfo $webApp = null
 	)
@@ -23,18 +23,18 @@ class MenuButtonWebApp implements \JsonSerializable
 	public static function fromArray(array $array): MenuButtonWebApp
 	{
 		return new static(
-			$array["type"] ?? "",
+			$array["type"] ?? "web_app",
 			$array["text"] ?? "",
-			$array["web_app"] ? WebAppInfo::fromArray($array["web_app"]) : null,
+			WebAppInfo::fromArray($array["web_app"]),
 		);
 	}
 
-	public function jsonSerialize()
+	public function jsonSerialize(): array
 	{
 		return [
 			"type" => $this->type,
 			"text" => $this->text,
-			"web_app" => $this->webApp ? $this->webApp->jsonSerialize() : null,
+			"web_app" => $this->webApp->jsonSerialize(),
 		];
 	}
 

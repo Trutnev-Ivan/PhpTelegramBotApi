@@ -32,8 +32,8 @@ class ChatJoinRequest implements \JsonSerializable
 	public static function fromArray(array $array): ChatJoinRequest
 	{
 		return new static(
-			$array["chat"] ? Chat::fromArray($array["chat"]) : null,
-			$array["from"] ? User::fromArray($array["from"]) : null,
+			Chat::fromArray($array["chat"]),
+			User::fromArray($array["from"]),
 			$array["user_chat_id"] ?? 0,
 			$array["date"] ?? 0,
 			$array["bio"],
@@ -41,16 +41,23 @@ class ChatJoinRequest implements \JsonSerializable
 		);
 	}
 
-	public function jsonSerialize()
+	public function jsonSerialize(): array
 	{
-		return [
-			"chat" => $this->chat ? $this->chat->jsonSerialize() : null,
-			"from" => $this->from ? $this->from->jsonSerialize() : null,
+		$array = [
+			"chat" => $this->chat->jsonSerialize(),
+			"from" => $this->from->jsonSerialize(),
 			"user_chat_id" => $this->userChatId,
 			"date" => $this->date,
-			"bio" => $this->bio,
-			"invite_link" => $this->inviteLink ? $this->inviteLink->jsonSerialize() : null,
 		];
+
+		if (isset($this->bio)){
+			$array["bio"] = $this->bio;
+		}
+		if (isset($this->inviteLink)){
+			$array["invite_link"] = $this->inviteLink->jsonSerialize();
+		}
+
+		return $array;
 	}
 
 	/**

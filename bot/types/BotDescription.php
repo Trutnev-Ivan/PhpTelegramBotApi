@@ -17,7 +17,7 @@ class BotDescription implements \JsonSerializable
 		return new static($array["description"] ?? "");
 	}
 
-	public function jsonSerialize()
+	public function jsonSerialize(): array
 	{
 		return [
 			"description" => $this->description,

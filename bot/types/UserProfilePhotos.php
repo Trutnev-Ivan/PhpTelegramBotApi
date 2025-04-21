@@ -34,7 +34,7 @@ class UserProfilePhotos implements \JsonSerializable
 		);
 	}
 
-	public function jsonSerialize()
+	public function jsonSerialize(): array
 	{
 		return [
 			"total_count" => $this->totalCount,

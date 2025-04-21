@@ -71,9 +71,9 @@ class Giveaway implements \JsonSerializable
 		);
 	}
 
-	public function jsonSerialize()
+	public function jsonSerialize(): array
 	{
-		return [
+		$array = [
 			"chats" => $this->chats ? array_map(fn($chat) => $chat->jsonSerialize(), $this->chats) : [],
 			"winners_selection_date" => $this->winnersSelectionDate,
 			"winner_count" => $this->winnerCount,
@@ -81,9 +81,16 @@ class Giveaway implements \JsonSerializable
 			"has_public_winners" => $this->hasPublicWinners,
 			"prize_description" => $this->prizeDescription,
 			"country_codes" => $this->countryCodes,
-			"prize_star_count" => $this->prizeStarCount,
-			"premium_subscription_month_count" => $this->premiumSubscriptionMonthCount,
 		];
+
+		if (isset($this->prizeStarCount)) {
+			$array["prize_star_count"] = $this->prizeStarCount;
+		}
+		if (isset($this->premiumSubscriptionMonthCount)) {
+			$array["premium_subscription_month_count"] = $this->premiumSubscriptionMonthCount;
+		}
+
+		return $array;
 	}
 
 	/**

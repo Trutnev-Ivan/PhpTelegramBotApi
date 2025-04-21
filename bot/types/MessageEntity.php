@@ -45,6 +45,30 @@ class MessageEntity implements \JsonSerializable
 		);
 	}
 
+	public function jsonSerialize(): array
+	{
+		$array = [
+			"type" => $this->type,
+			"offset" => $this->offset,
+			"length" => $this->length,
+		];
+
+		if (isset($this->url)) {
+			$array["url"] = $this->url;
+		}
+		if (isset($this->user)) {
+			$array["user"] = $this->user->jsonSerialize();
+		}
+		if (isset($this->language)) {
+			$array["language"] = $this->language;
+		}
+		if (isset($this->customEmojiId)) {
+			$array["custom_emoji_id"] = $this->customEmojiId;
+		}
+
+		return $array;
+	}
+
 	public function getType(): string
 	{
 		return $this->type;
@@ -64,7 +88,7 @@ class MessageEntity implements \JsonSerializable
 	{
 		return $this->url;
 	}
-	
+
 	public function getUser(): ?User
 	{
 		return $this->user;
@@ -78,18 +102,5 @@ class MessageEntity implements \JsonSerializable
 	public function getCustomEmojiId(): ?string
 	{
 		return $this->customEmojiId;
-	}
-
-	public function jsonSerialize()
-	{
-		return [
-			"type" => $this->type,
-			"offset" => $this->offset,
-			"length" => $this->length,
-			"url" => $this->url,
-			"user" => $this->user ? $this->user->jsonSerialize() : null,
-			"language" => $this->language,
-			"custom_emoji_id" => $this->customEmojiId,
-		];
 	}
 }

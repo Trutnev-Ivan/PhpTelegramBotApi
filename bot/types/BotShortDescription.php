@@ -21,7 +21,7 @@ class BotShortDescription implements \JsonSerializable
 		);
 	}
 
-	public function jsonSerialize()
+	public function jsonSerialize(): array
 	{
 		return [
 			"short_description" => $this->shortDescription,

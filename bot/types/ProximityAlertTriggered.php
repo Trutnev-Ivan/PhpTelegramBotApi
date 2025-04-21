@@ -25,11 +25,11 @@ class ProximityAlertTriggered implements \JsonSerializable
 		);
 	}
 
-	public function jsonSerialize()
+	public function jsonSerialize(): array
 	{
 		return [
-			"traveler" => $this->traveler ? $this->traveler->jsonSerialize() : null,
-			"watcher" => $this->watcher ? $this->watcher->jsonSerialize() : null,
+			"traveler" => $this->traveler->jsonSerialize(),
+			"watcher" => $this->watcher->jsonSerialize(),
 			"distance" => $this->distance,
 		];
 	}

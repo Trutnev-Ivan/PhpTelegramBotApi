@@ -3,15 +3,6 @@
 /**
  * @see https://core.telegram.org/bots/api#inputpaidmedia
  */
-class InputPaidMedia implements \JsonSerializable
+class InputPaidMedia extends InputFile
 {
-
-	//TODO: заполнгиь после
-
-	public function jsonSerialize()
-	{
-		return [
-
-		];
-	}
 }

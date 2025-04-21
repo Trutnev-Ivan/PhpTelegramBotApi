@@ -37,15 +37,24 @@ class Contact implements \JsonSerializable
 		);
 	}
 
-	public function jsonSerialize()
+	public function jsonSerialize(): array
 	{
-		return [
+		$array = [
 			"phone_number" => $this->phoneNumber,
 			"first_name" => $this->firstName,
-			"last_name" => $this->lastName,
-			"user_id" => $this->userId,
-			"vcard" => $this->vcard,
 		];
+
+		if (isset($this->lastName)) {
+			$array["last_name"] = $this->lastName;
+		}
+		if (isset($this->userId)) {
+			$array["user_id"] = $this->userId;
+		}
+		if (isset($this->vcard)) {
+			$array["vcard"] = $this->vcard;
+		}
+
+		return $array;
 	}
 
 	/**

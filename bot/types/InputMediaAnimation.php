@@ -21,8 +21,8 @@ class InputMediaAnimation implements \JsonSerializable
 	protected bool $hasSpoiler;
 
 	public function __construct(
-		string $type,
-		string $media,
+		string $type = "animation",
+		string $media = "",
 		?string $thumbnail = null,
 		?string $caption = null,
 		?string $parseMode = null,
@@ -46,6 +46,10 @@ class InputMediaAnimation implements \JsonSerializable
 		$this->duration = $duration;
 		$this->hasSpoiler = $hasSpoiler;
 
+		if ($this->type != "animation"){
+			throw new \InvalidArgumentException("Invalid media type. Must be 'animation', got {$this->type}");
+		}
+
 		foreach ($this->captionEntities as $entity) {
 			if (!$entity instanceof MessageEntity) {
 				throw new \InvalidArgumentException("All entities must be instances of " . MessageEntity::class);
@@ -56,7 +60,7 @@ class InputMediaAnimation implements \JsonSerializable
 	public static function fromArray(array $array): InputMediaAnimation
 	{
 		return new static(
-			$array["type"] ?? "",
+			$array["type"] ?? "animation",
 			$array["media"] ?? "",
 			$array["thumbnail"],
 			$array["caption"],
@@ -70,21 +74,36 @@ class InputMediaAnimation implements \JsonSerializable
 		);
 	}
 
-	public function jsonSerialize()
+	public function jsonSerialize(): array
 	{
-		return [
+		$array = [
 			"type" => $this->type,
 			"media" => $this->media,
-			"thumbnail" => $this->thumbnail,
-			"caption" => $this->caption,
-			"parse_mode" => $this->parseMode,
-			"caption_entities" => $this->captionEntities ? array_map(fn($entity) => $entity->jsonSerialize(), $this->captionEntities) : [],
 			"show_caption_above_media" => $this->showCaptionAboveMedia,
-			"width" => $this->width,
-			"height" => $this->height,
-			"duration" => $this->duration,
 			"has_spoiler" => $this->hasSpoiler,
+			"caption_entities" => $this->captionEntities ? array_map(fn($entity) => $entity->jsonSerialize(), $this->captionEntities) : [],
 		];
+
+		if (isset($this->thumbnail)) {
+			$array["thumbnail"] = $this->thumbnail;
+		}
+		if (isset($this->caption)) {
+			$array["caption"] = $this->caption;
+		}
+		if (isset($this->parseMode)) {
+			$array["parse_mode"] = $this->parseMode;
+		}
+		if (isset($this->width)) {
+			$array["width"] = $this->width;
+		}
+		if (isset($this->height)) {
+			$array["height"] = $this->height;
+		}
+		if (isset($this->duration)) {
+			$array["duration"] = $this->duration;
+		}
+
+		return $array;
 	}
 
 	/**

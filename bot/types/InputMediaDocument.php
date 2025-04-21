@@ -17,7 +17,7 @@ class InputMediaDocument implements \JsonSerializable
 	protected bool $disableContentTypeDetection;
 
 	public function __construct(
-		string $type = "",
+		string $type = "document",
 		string $media = "",
 		?string $thumbnail = null,
 		?string $caption = null,
@@ -34,6 +34,10 @@ class InputMediaDocument implements \JsonSerializable
 		$this->captionEntities = $captionEntities;
 		$this->disableContentTypeDetection = $disableContentTypeDetection;
 
+		if ($this->type != "document"){
+			throw new \InvalidArgumentException("Type must be 'document', got {$this->type}");
+		}
+		
 		foreach ($this->captionEntities as $entity) {
 			if (!$entity instanceof MessageEntity) {
 				throw new \InvalidArgumentException("All caption entities must be instances of " . MessageEntity::class);
@@ -44,7 +48,7 @@ class InputMediaDocument implements \JsonSerializable
 	public static function fromArray(array $array): InputMediaDocument
 	{
 		return new static(
-			$array["type"] ?? "",
+			$array["type"] ?? "document",
 			$array["media"] ?? "",
 			$array["thumbnail"],
 			$array["caption"],
@@ -54,17 +58,26 @@ class InputMediaDocument implements \JsonSerializable
 		);
 	}
 
-	public function jsonSerialize()
+	public function jsonSerialize(): array
 	{
-		return [
+		$array = [
 			"type" => $this->type,
 			"media" => $this->media,
-			"thumbnail" => $this->thumbnail,
-			"caption" => $this->caption,
-			"parse_mode" => $this->parseMode,
 			"caption_entities" => $this->captionEntities ? array_map(fn($entity) => $entity->jsonSerialize(), $this->captionEntities) : [],
 			"disable_content_type_detection" => $this->disableContentTypeDetection,
 		];
+
+		if (isset($this->thumbnail)) {
+			$array["thumbnail"] = $this->thumbnail;
+		}
+		if (isset($this->caption)) {
+			$array["caption"] = $this->caption;
+		}
+		if (isset($this->parseMode)) {
+			$array["parse_mode"] = $this->parseMode;
+		}
+
+		return $array;
 	}
 
 	/**

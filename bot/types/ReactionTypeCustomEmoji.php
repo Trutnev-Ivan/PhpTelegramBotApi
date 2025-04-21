@@ -9,23 +9,27 @@ class ReactionTypeCustomEmoji implements \JsonSerializable
 	protected string $customEmojiId;
 
 	public function __construct(
-		string $type = "",
+		string $type = "custom_emoji",
 		string $customEmojiId = ""
 	)
 	{
 		$this->type = $type;
 		$this->customEmojiId = $customEmojiId;
+
+		if ($this->type != "custom_emoji"){
+			throw new \InvalidArgumentException("Invalid reaction type. Must be 'custom_emoji', got {$this->type}");
+		}
 	}
 
 	public static function fromArray(array $array): ReactionTypeCustomEmoji
 	{
 		return new static(
-			$array["type"] ?? "",
+			$array["type"] ?? "custom_emoji",
 			$array["custom_emoji_id"] ?? ""
 		);
 	}
 
-	public function jsonSerialize()
+	public function jsonSerialize(): array
 	{
 		return [
 			"type" => $this->type,

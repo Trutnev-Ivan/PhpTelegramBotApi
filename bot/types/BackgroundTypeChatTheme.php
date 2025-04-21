@@ -9,23 +9,27 @@ class BackgroundTypeChatTheme implements \JsonSerializable
 	protected string $themeName;
 
 	public function __construct(
-		string $type = "",
+		string $type = "chat_theme",
 		string $themeName = ""
 	)
 	{
 		$this->type = $type;
 		$this->themeName = $themeName;
+
+		if ($this->type != "chat_theme"){
+			throw new \InvalidArgumentException("Invalid type for BackgroundTypeChatTheme. Must be 'chat_theme'");
+		}
 	}
 
 	public static function fromArray(array $array): BackgroundTypeChatTheme
 	{
 		return new static(
-			$array["type"] ?? "",
+			$array["type"] ?? "chat_theme",
 			$array["theme_name"] ?? ""
 		);
 	}
 
-	public function jsonSerialize()
+	public function jsonSerialize(): array
 	{
 		return [
 			"type" => $this->type,

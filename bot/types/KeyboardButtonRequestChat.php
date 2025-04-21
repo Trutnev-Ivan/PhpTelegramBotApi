@@ -61,21 +61,28 @@ class KeyboardButtonRequestChat implements \JsonSerializable
 		);
 	}
 
-	public function jsonSerialize()
+	public function jsonSerialize(): array
 	{
-		return [
+		$array = [
 			"request_id" => $this->requestId,
 			"chat_is_channel" => $this->chatIsChannel,
 			"chat_is_forum" => $this->chatIsForum,
 			"chat_has_username" => $this->chatHasUsername,
 			"chat_is_created" => $this->chatIsCreated,
-			"user_administrator_rights" => $this->userAdministratorRights ? $this->userAdministratorRights->jsonSerialize() : null,
-			"bot_administrator_rights" => $this->botAdministratorRights ? $this->botAdministratorRights->jsonSerialize() : null,
 			"bot_is_member" => $this->botIsMember,
 			"request_title" => $this->requestTitle,
 			"request_username" => $this->requestUsername,
 			"request_photo" => $this->requestPhoto,
 		];
+
+		if (isset($this->userAdministratorRights)){
+			$array["user_administrator_rights"] = $this->userAdministratorRights->jsonSerialize();
+		}
+		if (isset($this->botAdministratorRights)){
+			$array["bot_administrator_rights"] = $this->botAdministratorRights->jsonSerialize();
+		}
+
+		return $array;
 	}
 
 	/**

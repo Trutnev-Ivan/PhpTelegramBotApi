@@ -11,7 +11,7 @@ class ChatMemberOwner implements \JsonSerializable
 	protected ?string $customTitle;
 
 	public function __construct(
-		string $status = "",
+		string $status = "creator",
 		User $user = null,
 		bool $isAnonymous = false,
 		?string $customTitle = null
@@ -21,26 +21,35 @@ class ChatMemberOwner implements \JsonSerializable
 		$this->user = $user;
 		$this->isAnonymous = $isAnonymous;
 		$this->customTitle = $customTitle;
+
+		if ($this->status != "creator"){
+			throw new \InvalidArgumentException("Invalid status for ChatMemberOwner. Must be 'creator', got {$this->status}");
+		}
 	}
 
 	public static function fromArray(array $array): ChatMemberOwner
 	{
 		return new static(
 			$array["status"] ?? "",
-			$array["user"] ? User::fromArray($array["user"]) : null,
+			User::fromArray($array["user"]),
 			$array["is_anonymous"] ?? false,
 			$array["custom_title"],
 		);
 	}
 
-	public function jsonSerialize()
+	public function jsonSerialize(): array
 	{
-		return [
+		$array = [
 			"status" => $this->status,
 			"user" => $this->user ? $this->user->jsonSerialize() : null,
 			"is_anonymous" => $this->isAnonymous,
-			"custom_title" => $this->customTitle,
 		];
+
+		if (isset($this->customTitle)){
+			$array["custom_title"] = $this->customTitle;
+		}
+
+		return $array;
 	}
 
 	/**

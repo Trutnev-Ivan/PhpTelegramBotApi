@@ -39,13 +39,18 @@ class RefundedPayment implements \JsonSerializable
 
 	public function jsonSerialize(): array
 	{
-		return [
+		$array = [
 			"currency" => $this->currency,
 			"total_amount" => $this->totalAmount,
 			"invoice_payload" => $this->invoicePayload,
 			"telegram_payment_charge_id" => $this->telegramPaymentChargeId,
-			"provider_payment_charge_id" => $this->providerPaymentChargeId,
 		];
+
+		if (isset($this->providerPaymentChargeId)){
+			$array["provider_payment_charge_id"] = $this->providerPaymentChargeId;
+		}
+
+		return $array;
 	}
 
 	/**

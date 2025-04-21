@@ -9,23 +9,27 @@ class InputPaidMediaPhoto implements \JsonSerializable
 	protected string $media;
 
 	public function __construct(
-		string $type = "",
+		string $type = "photo",
 		string $media = ""
 	)
 	{
 		$this->type = $type;
 		$this->media = $media;
+
+		if ($this->type != "photo"){
+			throw new \InvalidArgumentException("Type must be 'photo', got {$this->type}");
+		}
 	}
 
 	public static function fromArray(array $array): InputPaidMediaPhoto
 	{
 		return new static(
-			$array["type"] ?? "",
+			$array["type"] ?? "photo",
 			$array["media"] ?? ""
 		);
 	}
 
-	public function jsonSerialize()
+	public function jsonSerialize(): array
 	{
 		return [
 			"type" => $this->type,

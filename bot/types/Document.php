@@ -35,22 +35,33 @@ class Document implements \JsonSerializable
 			$array["file_id"] ?? "",
 			$array["file_unique_id"] ?? "",
 			isset($array["thumbnail"]) ? PhotoSize::fromArray($array["thumbnail"]) : null,
-			$array["file_name"],
-			$array["mime_type"],
+			$array["file_name"] ?? "",
+			$array["mime_type"] ?? "",
 			$array["file_size"],
 		);
 	}
 
-	public function jsonSerialize()
+	public function jsonSerialize(): array
 	{
-		return [
+		$array = [
 			"file_id" => $this->fileId,
 			"file_unique_id" => $this->fileUniqueId,
-			"thumbnail" => $this->thumbnail ? $this->thumbnail->jsonSerialize() : null,
-			"file_name" => $this->fileName,
-			"mime_type" => $this->mimeType,
-			"file_size" => $this->fileSize,
 		];
+
+		if (isset($this->thumbnail)) {
+			$array["thumbnail"] = $this->thumbnail->jsonSerialize();
+		}
+		if (isset($this->fileName)) {
+			$array["file_name"] = $this->fileName;
+		}
+		if (isset($this->mimeType)) {
+			$array["mime_type"] = $this->mimeType;
+		}
+		if (isset($this->fileSize)) {
+			$array["file_size"] = $this->fileSize;
+		}
+
+		return $array;
 	}
 
 	/**

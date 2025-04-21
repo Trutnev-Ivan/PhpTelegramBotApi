@@ -44,28 +44,43 @@ class Audio implements \JsonSerializable
 			$array["file_id"] ?? "",
 			$array["file_unique_id"] ?? "",
 			$array["duration"] ?? 0,
-			$array["performer"] ?? null,
-			$array["title"] ?? null,
-			$array["file_name"] ?? null,
-			$array["mime_type"] ?? null,
-			$array["file_size"] ?? null,
+			$array["performer"],
+			$array["title"],
+			$array["file_name"],
+			$array["mime_type"],
+			$array["file_size"],
 			$array["thumbnail"] ? PhotoSize::fromArray($array["thumbnail"]) : null
 		);
 	}
 
-	public function jsonSerialize()
+	public function jsonSerialize(): array
 	{
-		return [
+		$array = [
 			"file_id" => $this->fileId,
 			"file_unique_id" => $this->fileUniqueId,
 			"duration" => $this->duration,
-			"performer" => $this->performer,
-			"title" => $this->title,
-			"file_name" => $this->fileName,
-			"mime_type" => $this->mimeType,
-			"file_size" => $this->fileSize,
-			"thumbnail" => $this->thumbnail ? $this->thumbnail->jsonSerialize() : null,
 		];
+
+		if (isset($this->performer)) {
+			$array["performer"] = $this->performer;
+		}
+		if (isset($this->title)) {
+			$array["title"] = $this->title;
+		}
+		if (isset($this->fileName)) {
+			$array["file_name"] = $this->fileName;
+		}
+		if (isset($this->mimeType)) {
+			$array["mime_type"] = $this->mimeType;
+		}
+		if (isset($this->fileSize)) {
+			$array["file_size"] = $this->fileSize;
+		}
+		if (isset($this->thumbnail)) {
+			$array["thumbnail"] = $this->thumbnail->jsonSerialize();
+		}
+
+		return $array;
 	}
 
 	/**

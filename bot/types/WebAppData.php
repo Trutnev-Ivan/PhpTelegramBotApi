@@ -25,7 +25,7 @@ class WebAppData implements \JsonSerializable
 		);
 	}
 
-	public function jsonSerialize()
+	public function jsonSerialize(): array
 	{
 		return [
 			"data" => $this->data,

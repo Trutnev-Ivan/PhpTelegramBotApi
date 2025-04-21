@@ -12,7 +12,7 @@ class ChatBoostSourceGiveaway implements \JsonSerializable
 	protected bool $isUnclaimed;
 
 	public function __construct(
-		string $source = "",
+		string $source = "giveaway",
 		int $giveawayMessageId = 0,
 		?User $user = null,
 		?int $prizeStarCount = null,
@@ -24,28 +24,39 @@ class ChatBoostSourceGiveaway implements \JsonSerializable
 		$this->user = $user;
 		$this->prizeStarCount = $prizeStarCount;
 		$this->isUnclaimed = $isUnclaimed;
+
+		if ($this->source != "giveaway"){
+			throw new \InvalidArgumentException("Invalid source type, must be 'giveaway', got '$source'");
+		}
 	}
 
 	public static function fromArray(array $array): ChatBoostSourceGiveaway
 	{
 		return new static(
-			$array["source"] ?? "",
+			$array["source"] ?? "giveaway",
 			$array["giveaway_message_id"] ?? 0,
 			$array["user"] ? User::fromArray($array["user"]) : null,
-			$array["prize_star_count"] ?? null,
+			$array["prize_star_count"],
 			$array["is_unclaimed"] ?? false,
 		);
 	}
 
-	public function jsonSerialize()
+	public function jsonSerialize(): array
 	{
-		return [
+		$array = [
 			"source" => $this->source,
 			"giveaway_message_id" => $this->giveawayMessageId,
-			"user" => $this->user ? $this->user->jsonSerialize() : null,
-			"prize_star_count" => $this->prizeStarCount,
 			"is_unclaimed" => $this->isUnclaimed,
 		];
+
+		if (isset($this->user)) {
+			$array["user"] = $this->user->jsonSerialize();
+		}
+		if (isset($this->prizeStarCount)) {
+			$array["prize_star_count"] = $this->prizeStarCount;
+		}
+
+		return $array;
 	}
 
 	/**

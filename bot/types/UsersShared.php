@@ -34,7 +34,7 @@ class UsersShared implements \JsonSerializable
 		);
 	}
 
-	public function jsonSerialize()
+	public function jsonSerialize(): array
 	{
 		return [
 			"request_id" => $this->requestId,

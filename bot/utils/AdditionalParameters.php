@@ -5,6 +5,11 @@
  */
 class AdditionalParameters
 {
+	const STRING = "string";
+	const BOOL = "bool";
+	const INT = "int";
+	const FLOAT = "float";
+
 	protected array $params;
 	protected array $result;
 
@@ -63,7 +68,7 @@ class AdditionalParameters
 				throw new \InvalidArgumentException("Invalid class for parameter '{$code}'. Expected '{$className}', got '" . get_class($this->params[$code]) . "'");
 			}
 
-			$this->result[$code] = $this->params[$code]->jsonSerialize();
+			$this->result[$code] = $this->params[$code];
 		}
 
 		return $this;
@@ -84,7 +89,25 @@ class AdditionalParameters
 				}
 			}
 
-			$this->result[$code] = array_map(fn($item) => $item->jsonSerialize(), $this->params[$code]);
+			$this->result[$code] = array_map(fn($item) => $item, $this->params[$code]);
+		}
+
+		return $this;
+	}
+
+	public function withArrayOfClasses(string $code, string ...$className): AdditionalParameters
+	{
+		if (is_array($this->params[$code])) {
+			foreach ($this->params[$code] as $item) {
+				foreach ($className as $class) {
+					if ($item::class === $class) {
+						$this->result[$code][] = $item;
+						continue 2;
+					}
+				}
+
+				throw new \InvalidArgumentException("Invalid class for item in array parameter '{$code}'. Expected one of '" . implode("', '", $className) . "', got '" . get_class($item) . "'");
+			}
 		}
 
 		return $this;
@@ -189,11 +212,53 @@ class AdditionalParameters
 				}
 			}
 
-			if (!$hasClass){
-				throw new \InvalidArgumentException("Invalid class for parameter '{$code}'. Expected ".implode(", ", $classNames).", got '" . get_class($this->params[$code]) . "'");
+			if (!$hasClass) {
+				throw new \InvalidArgumentException("Invalid class for parameter '{$code}'. Expected " . implode(", ", $classNames) . ", got '" . get_class($this->params[$code]) . "'");
 			}
 
-			$this->result[$code] = $this->params[$code]->jsonSerialize();
+			$this->result[$code] = $this->params[$code];
+		}
+
+		return $this;
+	}
+
+	/**
+	 * @param string $code
+	 * @param string ...$types
+	 * @return $this
+	 * @throws \InvalidArgumentException
+	 */
+	public function withTypes(string $code, string ...$types): AdditionalParameters
+	{
+		$classes = [];
+
+		if (isset($this->params[$code])) {
+			foreach ($types as $type) {
+				switch ($type) {
+					case static::BOOL:
+						$this->withBool($code);
+						break;
+					case static::FLOAT:
+						$this->withFloat($code);
+						break;
+					case static::INT:
+						$this->withInt($code);
+						break;
+					case static::STRING:
+						$this->withString($code);
+						break;
+					default:
+						$classes[] = $type;
+				}
+			}
+		}
+
+		if (!isset($this->result[$code])) {
+			try {
+				$this->withClasses($code, ...$classes);
+			} catch (\InvalidArgumentException $exception) {
+				throw new \InvalidArgumentException("Invalid type for parameter '{$code}'. Expected one of: " . implode(", ", $types) . ", got '" . gettype($this->params[$code]) . "'");
+			}
 		}
 
 		return $this;

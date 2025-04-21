@@ -9,27 +9,31 @@ class ChatBoostSourceGiftCode implements \JsonSerializable
 	protected User $user;
 
 	public function __construct(
-		string $source,
+		string $source = "gift_code",
 		User $user = null
 	)
 	{
 		$this->source = $source;
 		$this->user = $user;
+
+		if ($this->source != "gift_code"){
+			throw new \InvalidArgumentException("Source must be 'gift_code', got '$source'");
+		}
 	}
 
 	public static function fromArray(array $array): ChatBoostSourceGiftCode
 	{
 		return new static(
-			$array["source"] ?? "",
-			$array["user"] ? User::fromArray($array["user"]) : null
+			$array["source"] ?? "gift_code",
+			User::fromArray($array["user"])
 		);
 	}
 
-	public function jsonSerialize()
+	public function jsonSerialize(): array
 	{
 		return [
 			"source" => $this->source,
-			"user" => $this->user ? $this->user->jsonSerialize() : null,
+			"user" => $this->user->jsonSerialize(),
 		];
 	}
 

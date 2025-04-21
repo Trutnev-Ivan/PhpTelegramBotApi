@@ -29,13 +29,18 @@ class ForceReply implements \JsonSerializable
 		);
 	}
 
-	public function jsonSerialize()
+	public function jsonSerialize(): array
 	{
-		return [
+		$array = [
 			"force_reply" => $this->forceReply,
-			"input_field_placeholder" => $this->inputFieldPlaceholder,
 			"selective" => $this->selective,
 		];
+
+		if (isset($this->inputFieldPlaceholder)) {
+			$array["input_field_placeholder"] = $this->inputFieldPlaceholder;
+		}
+
+		return $array;
 	}
 
 	/**

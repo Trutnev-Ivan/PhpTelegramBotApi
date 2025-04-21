@@ -46,15 +46,24 @@ class SharedUser implements \JsonSerializable
 		);
 	}
 
-	public function jsonSerialize()
+	public function jsonSerialize(): array
 	{
-		return [
+		$array = [
 			"user_id" => $this->userId,
-			"first_name" => $this->firstName,
-			"last_name" => $this->lastName,
-			"username" => $this->username,
 			"photo" => $this->photo ? array_map(fn($photo) => $photo->jsonSerialize(), $this->photo) : [],
 		];
+
+		if (isset($this->firstName)) {
+			$array["first_name"] = $this->firstName;
+		}
+		if (isset($this->lastName)) {
+			$array["last_name"] = $this->lastName;
+		}
+		if (isset($this->username)) {
+			$array["username"] = $this->username;
+		}
+
+		return $array;
 	}
 
 	/**

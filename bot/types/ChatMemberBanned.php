@@ -10,7 +10,7 @@ class ChatMemberBanned implements \JsonSerializable
 	protected int $untilDate;
 
 	public function __construct(
-		string $status = "",
+		string $status = "kicked",
 		User $user = null,
 		int $untilDate = 0
 	)
@@ -18,22 +18,26 @@ class ChatMemberBanned implements \JsonSerializable
 		$this->status = $status;
 		$this->user = $user;
 		$this->untilDate = $untilDate;
+
+		if ($this->status != "kicked"){
+			throw new \InvalidArgumentException("Invalid status provided for ChatMemberBanned. Must be 'kicked', got {$this->status}'");
+		}
 	}
 
 	public static function fromArray(array $array): ChatMemberBanned
 	{
 		return new static(
-			$array["status"] ?? "",
-			$array["user"] ? User::fromArray($array["user"]) : null,
+			$array["status"] ?? "kicked",
+			User::fromArray($array["user"]),
 			$array["until_date"] ?? 0
 		);
 	}
 
-	public function jsonSerialize()
+	public function jsonSerialize(): array
 	{
 		return [
 			"status" => $this->status,
-			"user" => $this->user ? $this->user->jsonSerialize() : null,
+			"user" => $this->user->jsonSerialize(),
 			"until_date" => $this->untilDate,
 		];
 	}

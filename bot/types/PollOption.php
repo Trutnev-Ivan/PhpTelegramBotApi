@@ -38,7 +38,7 @@ class PollOption implements \JsonSerializable
 		);
 	}
 
-	public function jsonSerialize()
+	public function jsonSerialize(): array
 	{
 		return [
 			"text" => $this->text,

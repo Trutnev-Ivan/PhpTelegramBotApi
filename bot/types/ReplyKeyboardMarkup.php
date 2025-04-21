@@ -50,16 +50,21 @@ class ReplyKeyboardMarkup implements \JsonSerializable
 		);
 	}
 
-	public function jsonSerialize()
+	public function jsonSerialize(): array
 	{
-		return [
+		$array = [
 			"keyboard" => $this->keyboard ? array_map(fn($keyboard) => $keyboard->jsonSerialize(), $this->keyboard) : [],
 			"is_persistent" => $this->isPersistent,
 			"resize_keyboard" => $this->resizeKeyboard,
 			"one_time_keyboard" => $this->oneTimeKeyboard,
-			"input_field_placeholder" => $this->inputFieldPlaceholder,
 			"selective" => $this->selective,
 		];
+
+		if (isset($this->inputFieldPlaceholder)){
+			$array["input_field_placeholder"] = $this->inputFieldPlaceholder;
+		}
+
+		return $array;
 	}
 
 	/**

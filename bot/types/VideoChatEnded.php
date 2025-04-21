@@ -18,7 +18,7 @@ class VideoChatEnded implements \JsonSerializable
 		return new static($array["duration"]);
 	}
 
-	public function jsonSerialize()
+	public function jsonSerialize(): array
 	{
 		return [
 			"duration" => $this->duration,

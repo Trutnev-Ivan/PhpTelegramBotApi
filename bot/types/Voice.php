@@ -29,7 +29,7 @@ class Voice implements \JsonSerializable
 	public static function fromArray(array $array): Voice
 	{
 		return new static(
-			$array["file_id"]?? "",
+			$array["file_id"] ?? "",
 			$array["file_unique_id"] ?? "",
 			$array["duration"] ?? 0,
 			$array["mime_type"] ?? null,
@@ -37,15 +37,22 @@ class Voice implements \JsonSerializable
 		);
 	}
 
-	public function jsonSerialize()
+	public function jsonSerialize(): array
 	{
-		return [
+		$array = [
 			"file_id" => $this->fileId,
 			"file_unique_id" => $this->fileUniqueId,
 			"duration" => $this->duration,
-			"mime_type" => $this->mimeType,
-			"file_size" => $this->fileSize,
 		];
+
+		if (isset($this->mimeType)) {
+			$array["mime_type"] = $this->mimeType;
+		}
+		if (isset($this->fileSize)) {
+			$array["file_size"] = $this->fileSize;
+		}
+
+		return $array;
 	}
 
 	/**

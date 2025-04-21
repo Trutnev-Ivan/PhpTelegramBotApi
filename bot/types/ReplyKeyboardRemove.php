@@ -25,7 +25,7 @@ class ReplyKeyboardRemove implements \JsonSerializable
 		);
 	}
 
-	public function jsonSerialize()
+	public function jsonSerialize(): array
 	{
 		return [
 			"remove_keyboard" => $this->removeKeyboard,

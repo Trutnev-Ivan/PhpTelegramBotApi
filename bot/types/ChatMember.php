@@ -3,17 +3,27 @@
 /**
  * @see https://core.telegram.org/bots/api#chatmember
  */
-class ChatMember implements \JsonSerializable
+class ChatMember
 {
-	//TODO: добавить после
-
-	public static function fromArray(array $array): ChatMember
+	public static function fromArray(array $array): ChatMemberOwner|ChatMemberAdministrator|ChatMemberMember|ChatMemberRestricted|ChatMemberLeft|ChatMemberBanned
 	{
+		if (isset($array['status'])) {
+			switch ($array['status']) {
+				case "creator":
+					return ChatMemberOwner::fromArray($array);
+				case "administrator":
+					return ChatMemberAdministrator::fromArray($array);
+				case "member":
+					return ChatMemberMember::fromArray($array);
+				case "restricted":
+					return ChatMemberRestricted::fromArray($array);
+				case "left":
+					return ChatMemberLeft::fromArray($array);
+				case "kicked":
+					return ChatMemberBanned::fromArray($array);
+			}
+		}
 
-	}
-
-	public function jsonSerialize()
-	{
-		// TODO: Implement jsonSerialize() method.
+		throw new \InvalidArgumentException('Invalid chat member status');
 	}
 }

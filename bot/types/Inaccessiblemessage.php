@@ -23,13 +23,13 @@ class InaccessibleMessage implements \JsonSerializable
 	public static function fromArray(array $array): InaccessibleMessage
 	{
 		return new static(
-			$array["chat"] ? Chat::fromArray($array["chat"]) : null,
+			Chat::fromArray($array["chat"]),
 			$array["message_id"] ?? 0,
 			$array["date"] ?? 0
 		);
 	}
 
-	public function jsonSerialize()
+	public function jsonSerialize(): array
 	{
 		return [
 			"chat" => $this->chat->jsonSerialize(),

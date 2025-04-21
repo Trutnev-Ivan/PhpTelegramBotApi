@@ -9,12 +9,16 @@ class BotCommandScopeChat implements \JsonSerializable
 	protected string|int $chatId;
 
 	public function __construct(
-		string $type = "",
+		string $type = "chat",
 		string|int $chatId = 0
 	)
 	{
 		$this->type = $type;
 		$this->chatId = $chatId;
+
+		if ($this->type != "chat"){
+			throw new \InvalidArgumentException("Invalid type. Expected 'chat', got '". $this->type. "'");
+		}
 	}
 
 	public static function fromArray(array $array): BotCommandScopeChat
@@ -25,7 +29,7 @@ class BotCommandScopeChat implements \JsonSerializable
 		);
 	}
 
-	public function jsonSerialize()
+	public function jsonSerialize(): array
 	{
 		return [
 			"type" => $this->type,

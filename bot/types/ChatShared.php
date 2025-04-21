@@ -46,14 +46,61 @@ class ChatShared implements \JsonSerializable
 		);
 	}
 
-	public function jsonSerialize()
+	public function jsonSerialize(): array
 	{
-		return [
+		$array = [
 			"request_id" => $this->requestId,
 			"chat_id" => $this->chatId,
-			"title" => $this->title,
-			"username" => $this->username,
 			"photo" => $this->photo ? array_map(fn($photo) => $photo->jsonSerialize(), $this->photo) : [],
 		];
+
+		if (isset($this->title)) {
+			$array["title"] = $this->title;
+		}
+		if (isset($this->username)) {
+			$array["username"] = $this->username;
+		}
+
+		return $array;
+	}
+
+	/**
+	 * @return int
+	 */
+	public function getRequestId(): int
+	{
+		return $this->requestId;
+	}
+
+	/**
+	 * @return int
+	 */
+	public function getChatId(): int
+	{
+		return $this->chatId;
+	}
+
+	/**
+	 * @return string|null
+	 */
+	public function getTitle(): ?string
+	{
+		return $this->title;
+	}
+
+	/**
+	 * @return string|null
+	 */
+	public function getUsername(): ?string
+	{
+		return $this->username;
+	}
+
+	/**
+	 * @return PhotoSize[]
+	 */
+	public function getPhoto(): array
+	{
+		return $this->photo;
 	}
 }
